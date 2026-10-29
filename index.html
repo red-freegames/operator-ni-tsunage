@@ -1,0 +1,1995 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#07090c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<title>オペレーターに繋げ！</title>
+<meta name="description" content="理不尽なAI音声ガイダンスを突破して、人間のオペレーターに繋げ！Web誘導・たらい回し・保留音・部署違いの転送に耐える、スマホ向けコールセンター脱出ゲーム。全12ステージ・実績27種。">
+<meta property="og:title" content="オペレーターに繋げ！">
+<meta property="og:description" content="AI音声ガイダンスを突破して、人間に繋げ。Web誘導、たらい回し、保留音、そして「担当部署が違います」。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://red-freegames.github.io/operator-ni-tsunage/">
+<meta property="og:image" content="https://red-freegames.github.io/operator-ni-tsunage/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://red-freegames.github.io/operator-ni-tsunage/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://red-freegames.github.io/operator-ni-tsunage/">
+<script>
+/* アクセス解析（Googleアナリティクス4）。RED FREE GAMES 共通の測定ID。本番（github.io）でだけ計測し、画面には何も出さない */
+const GA_ID = "G-FC7LD0DJTQ";
+if (GA_ID && /\.github\.io$/.test(location.hostname)) {
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () { dataLayer.push(arguments); };
+  gtag("js", new Date()); gtag("config", GA_ID, { page_title: "オペレーターに繋げ！" });
+  const s = document.createElement("script"); s.async = true;
+  s.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(GA_ID); document.head.appendChild(s);
+}
+</script>
+<style>
+:root{
+  --bg:#07090c;
+  --panel:#10141a;
+  --panel2:#161b23;
+  --line:#232b36;
+  --text:#e6edf5;
+  --dim:#7d8a99;
+  --neon:#39ff9a;
+  --cyan:#3ee8ff;
+  --warn:#ffcf3e;
+  --danger:#ff3e6c;
+  --human:#ffad5c;
+  --key:#1a2029;
+  --keyOn:#2a3442;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-l:env(safe-area-inset-left,0px);
+  --safe-r:env(safe-area-inset-right,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+  margin:0;padding:0;height:100%;width:100%;
+  background:var(--bg);color:var(--text);
+  overflow:hidden;overscroll-behavior:none;
+  position:fixed;inset:0;
+  touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  -webkit-text-size-adjust:100%;text-size-adjust:100%;
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",Meiryo,sans-serif;
+}
+button{font:inherit;color:inherit;touch-action:manipulation;cursor:pointer}
+#app{
+  position:relative;
+  height:100vh;height:100dvh;
+  max-width:480px;margin:0 auto;
+  display:flex;flex-direction:column;
+  padding:calc(var(--safe-t) + 8px) calc(var(--safe-r) + 16px) calc(var(--safe-b) + 10px) calc(var(--safe-l) + 16px);
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(62,232,255,.08), transparent 60%),
+    radial-gradient(100% 50% at 50% 100%, rgba(57,255,154,.05), transparent 60%),
+    var(--bg);
+  overflow:hidden;
+}
+
+/* ---------- header ---------- */
+.topbar{display:flex;align-items:center;gap:8px;min-height:36px;flex:none}
+.chip{
+  flex:none;font-size:11px;font-weight:800;letter-spacing:.08em;
+  color:var(--bg);background:var(--neon);border-radius:6px;padding:3px 7px;
+  box-shadow:0 0 10px rgba(57,255,154,.5);
+}
+.mission{flex:1;min-width:0;font-size:12px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mission b{color:var(--warn);font-weight:700}
+.icon-btn{
+  flex:none;width:44px;height:36px;border-radius:10px;border:1px solid var(--line);
+  background:var(--panel);font-size:16px;display:grid;place-items:center;
+}
+
+/* ---------- call info ---------- */
+.callinfo{display:flex;align-items:center;gap:12px;padding:10px 0 8px;flex:none}
+.avatar{
+  position:relative;flex:none;width:52px;height:52px;border-radius:50%;
+  display:grid;place-items:center;font-size:26px;
+  background:linear-gradient(145deg,#1b2430,#0d1117);border:1px solid var(--line);
+}
+.avatar::after{
+  content:"";position:absolute;inset:-5px;border-radius:50%;
+  border:2px solid var(--cyan);opacity:0;
+}
+.avatar.talking::after{animation:pulse 1s ease-out infinite}
+.avatar.human{border-color:var(--human)}
+.avatar.human::after{border-color:var(--human)}
+@keyframes pulse{0%{opacity:.9;transform:scale(.92)}100%{opacity:0;transform:scale(1.18)}}
+.who{flex:1;min-width:0}
+.who .name{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who .sub{font-size:12px;color:var(--dim);margin-top:2px}
+.timerbox{flex:none;text-align:right}
+.timer{
+  font-family:var(--mono);
+  font-size:24px;font-weight:700;color:var(--neon);
+  text-shadow:0 0 8px rgba(57,255,154,.65);letter-spacing:.04em;line-height:1;
+}
+.status{font-size:11px;color:var(--dim);margin-top:4px}
+.status.live{color:var(--neon)}
+.status.end{color:var(--danger)}
+
+/* ---------- subtitle screen ---------- */
+.screen{
+  position:relative;flex:1 1 auto;min-height:96px;
+  display:flex;flex-direction:column;
+  background:linear-gradient(180deg,var(--panel),#0b0f14);
+  border:1px solid var(--line);border-radius:16px;
+  padding:10px 14px 12px;overflow:hidden;
+}
+.speaker{flex:none;font-size:11px;letter-spacing:.06em;color:var(--cyan);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.speaker::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 6px currentColor}
+.speaker.human{color:var(--human)}
+.speaker.sys{color:var(--danger)}
+.subtitle{
+  flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  font-size:clamp(15px,4.3vw,18px);line-height:1.65;
+  color:#d9fff0;text-shadow:0 0 6px rgba(57,255,154,.25);
+  word-break:break-word;scrollbar-width:none;
+}
+.subtitle::-webkit-scrollbar{display:none}
+.subtitle.human{color:#ffe7cf;text-shadow:0 0 8px rgba(255,173,92,.4)}
+.subtitle.sys{color:#ffd0da;text-shadow:0 0 8px rgba(255,62,108,.45)}
+.subtitle .key{color:var(--warn);font-weight:800}
+.caret{display:inline-block;width:.5em;height:1.05em;vertical-align:-.15em;margin-left:2px;background:var(--neon);animation:blink .8s steps(1) infinite}
+.subtitle.human .caret{background:var(--human)}
+@keyframes blink{50%{opacity:0}}
+
+.memo{flex:none;display:flex;flex-wrap:wrap;gap:4px 6px;margin-bottom:8px}
+.memo[hidden]{display:none}
+.memo span{font-size:11px;line-height:1.3;padding:3px 7px;border-radius:6px;background:#141a22;border:1px solid var(--line);color:#aab6c3}
+.memo b{color:var(--warn);font-family:var(--mono);font-weight:700;margin-left:4px}
+.hold{flex:none;margin-top:8px}
+.hold[hidden]{display:none}
+.holdlabel{display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--warn);padding:6px 0;border:1px dashed rgba(255,207,62,.35);border-radius:10px}
+.holdlabel .note{display:inline-block;animation:bob 1.2s ease-in-out infinite}
+.holdlabel .note:last-child{animation-delay:.6s}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.hint{
+  flex:none;margin-top:8px;font-size:12px;color:var(--warn);
+  border:1px dashed rgba(255,207,62,.5);border-radius:10px;padding:6px 10px;
+}
+.hint[hidden]{display:none}
+
+/* ---------- dial ---------- */
+.inputline{
+  flex:none;height:30px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:20px;letter-spacing:.2em;color:var(--text);
+}
+.pad{
+  flex:none;display:grid;grid-template-columns:repeat(3,1fr);
+  gap:clamp(6px,1.2vh,10px) 14px;
+}
+.k{
+  height:clamp(48px,8.4vh,68px);min-width:48px;
+  border-radius:999px;border:1px solid var(--line);
+  background:var(--key);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:background .08s,transform .08s,box-shadow .08s;
+}
+.k .d{font-size:clamp(22px,3.6vh,28px);font-weight:500;line-height:1}
+.k .l{font-size:9px;letter-spacing:.18em;color:var(--dim);margin-top:2px;line-height:1;min-height:9px}
+.k.on{background:var(--keyOn);transform:scale(.95);box-shadow:0 0 16px rgba(62,232,255,.35);border-color:var(--cyan)}
+.controls{flex:none;display:flex;justify-content:center;gap:12px;padding-top:clamp(8px,1.6vh,14px)}
+.retry{
+  flex:1;max-width:180px;height:clamp(52px,8.4vh,64px);border-radius:999px;
+  border:1px solid var(--line);background:var(--panel2);color:var(--text);
+  font-weight:800;font-size:15px;letter-spacing:.06em;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.retry svg{width:20px;height:20px}
+.retry:active{transform:scale(.97);border-color:var(--cyan)}
+.retry:disabled{opacity:.35}
+.hang{
+  flex:1;max-width:180px;height:clamp(52px,8.4vh,64px);border:none;border-radius:999px;
+  background:var(--danger);color:#fff;font-weight:800;font-size:16px;letter-spacing:.1em;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 4px 18px rgba(255,62,108,.45);
+}
+.hang svg{width:26px;height:26px;transform:rotate(135deg)}
+.hang:active{filter:brightness(1.15);transform:scale(.97)}
+.hang:disabled{opacity:.35;box-shadow:none}
+
+/* ---------- toasts ---------- */
+.toast{
+  position:absolute;left:50%;top:calc(var(--safe-t) + 54px);transform:translate(-50%,-20px);
+  background:rgba(16,20,26,.96);border:1px solid var(--warn);color:var(--warn);
+  font-size:13px;padding:8px 14px;border-radius:999px;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:30;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.achtoast{
+  position:absolute;left:50%;top:calc(var(--safe-t) + 10px);z-index:60;
+  transform:translate(-50%,-160%);transition:transform .35s cubic-bezier(.2,1.3,.4,1);
+  display:flex;align-items:center;gap:10px;width:max-content;max-width:calc(100% - 32px);
+  background:rgba(16,20,26,.98);border:1px solid var(--warn);border-radius:14px;padding:8px 14px 8px 10px;
+  box-shadow:0 0 22px rgba(255,207,62,.35);pointer-events:none;
+}
+.achtoast.show{transform:translate(-50%,0)}
+.achtoast .ic{font-size:26px;flex:none}
+.achtoast small{display:block;font-size:10px;letter-spacing:.2em;color:var(--warn)}
+.achtoast b{display:block;font-size:14px}
+
+/* ---------- overlays ---------- */
+.ov{
+  position:absolute;inset:0;z-index:40;
+  display:flex;flex-direction:column;
+  padding:calc(var(--safe-t) + 20px) calc(var(--safe-r) + 16px) calc(var(--safe-b) + 20px) calc(var(--safe-l) + 16px);
+  background:rgba(5,7,10,.94);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  overflow-y:auto;overscroll-behavior:contain;
+}
+.ov[hidden]{display:none}
+.ov-inner{margin:auto 0;width:100%;display:flex;flex-direction:column;gap:14px}
+.logo{text-align:center}
+.logo .small{font-size:12px;letter-spacing:.3em;color:var(--cyan)}
+.logo h1{
+  margin:6px 0 0;font-size:clamp(28px,9vw,40px);line-height:1.15;font-weight:900;color:var(--neon);
+  text-shadow:0 0 10px rgba(57,255,154,.8),0 0 30px rgba(57,255,154,.35);
+}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.card .lbl{font-size:11px;letter-spacing:.15em;color:var(--warn);margin-bottom:6px}
+.card ul{margin:0;padding-left:1.1em;font-size:13px;line-height:1.7;color:#c4cfdb}
+.card ul b{color:var(--danger)}
+.btn{
+  min-height:56px;border-radius:14px;border:none;font-weight:800;font-size:17px;letter-spacing:.05em;
+  display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+}
+.btn.call{background:var(--neon);color:#04130b;box-shadow:0 0 22px rgba(57,255,154,.45)}
+.btn.sub{background:var(--panel2);border:1px solid var(--line);color:var(--text);font-weight:700;font-size:15px}
+.btn.x{background:#000;border:1px solid #444;color:#fff}
+.btn.ach{background:linear-gradient(180deg,#1d1a0e,#12100a);border:1px solid rgba(255,207,62,.55);color:var(--warn);box-shadow:0 0 16px rgba(255,207,62,.15)}
+.btn.ach .cnt{font-family:var(--mono);font-size:14px;color:var(--text);opacity:.85}
+.btn:active,.stage-card:active{transform:scale(.98)}
+.row{display:flex;gap:8px}
+.row .btn{flex:1}
+.big{text-align:center}
+.big .tag{font-size:13px;letter-spacing:.3em}
+.big h2{margin:4px 0 0;font-size:clamp(34px,11vw,48px);font-weight:900;line-height:1.1}
+.over .tag{color:var(--danger)}
+.over h2{color:var(--danger);text-shadow:0 0 14px rgba(255,62,108,.7)}
+.clear .tag{color:var(--human)}
+.clear h2{color:var(--neon);text-shadow:0 0 14px rgba(57,255,154,.7)}
+.newrec{align-self:center;font-size:12px;font-weight:900;letter-spacing:.2em;color:var(--bg);background:var(--warn);border-radius:6px;padding:3px 10px;box-shadow:0 0 14px rgba(255,207,62,.6)}
+.newrec[hidden]{display:none}
+.reason{text-align:center;font-size:14px;line-height:1.7;color:#ffd0da}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.stat .v{font-family:var(--mono);font-size:22px;font-weight:800;color:var(--neon)}
+.stat .n{font-size:11px;color:var(--dim);margin-top:2px}
+.stat.rank .v{color:var(--warn);font-size:26px}
+.shake{animation:shake .35s}
+@keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+/* ---------- RED FREE GAMES 共通（HOME・他のゲーム・要望・フッター） ---------- */
+.homebtn{
+  flex:none;height:36px;padding:0 10px;border-radius:10px;border:1px solid var(--line);
+  background:var(--panel);font-size:12px;font-weight:800;letter-spacing:.04em;white-space:nowrap;
+}
+.homebtn:active{border-color:var(--cyan)}
+a.btn{text-decoration:none}
+.btn.danger{background:var(--danger);color:#fff;box-shadow:0 0 16px rgba(255,62,108,.4)}
+.fb-link{display:flex;align-items:center;justify-content:center;min-height:44px;font-size:13px;color:var(--dim);text-decoration:underline;text-underline-offset:3px}
+.site-foot{display:flex;flex-wrap:wrap;gap:0 14px;justify-content:center;font-size:11px;color:#5d6876;margin-top:-4px}
+.site-foot a{display:flex;align-items:center;min-height:40px;color:var(--dim);text-decoration:none}
+.site-foot span{width:100%;text-align:center}
+.confirm-ov{z-index:45;justify-content:center;background:rgba(5,7,10,.8)}
+.hcard{width:100%;max-width:360px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px 16px 16px;text-align:center}
+.hcard h2{margin:0 0 6px;font-size:19px}
+.hcard p{margin:0 0 16px;font-size:13px;color:var(--dim);line-height:1.6}
+@media (max-width:359px){ .homebtn{padding:0 7px;font-size:11px} .mission{display:none} .topbar{justify-content:space-between} }
+
+/* ---------- home ---------- */
+.sec-title{font-size:11px;letter-spacing:.25em;color:var(--cyan);margin:4px 2px -6px}
+.stage-list{display:flex;flex-direction:column;gap:10px}
+.stage-card{
+  display:flex;align-items:center;gap:12px;width:100%;min-height:76px;padding:12px 14px;
+  border-radius:16px;border:1px solid var(--line);background:var(--panel);text-align:left;
+  transition:transform .08s,border-color .15s;
+}
+.stage-card.done{border-color:rgba(57,255,154,.35)}
+.sc-num{
+  flex:none;width:44px;text-align:center;font-family:var(--mono);font-size:26px;font-weight:900;
+  color:var(--neon);text-shadow:0 0 10px rgba(57,255,154,.6);
+}
+.sc-body{flex:1;min-width:0}
+.sc-title{font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-desc{font-size:12px;color:var(--dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-tier{display:inline-block;margin-top:4px;font-size:10px;font-weight:900;letter-spacing:.15em;padding:2px 6px;border-radius:5px;border:1px solid currentColor}
+.tier-head{display:flex;align-items:center;gap:8px;margin:8px 2px -2px;font-size:13px;font-weight:900;letter-spacing:.25em}
+.tier-head::after{content:"";flex:1;height:1px;background:currentColor;opacity:.35}
+.t0{color:var(--neon)} .t1{color:var(--cyan)} .t2{color:var(--warn)} .t3{color:var(--danger)}
+.chip.t0{background:var(--neon)} .chip.t1{background:var(--cyan);box-shadow:0 0 10px rgba(62,232,255,.5)}
+.chip.t2{background:var(--warn);box-shadow:0 0 10px rgba(255,207,62,.5)} .chip.t3{background:var(--danger);box-shadow:0 0 10px rgba(255,62,108,.6)}
+.chip[class*="t"]{color:var(--bg)}
+.stage-card.oni{border-color:rgba(255,62,108,.35);background:linear-gradient(180deg,#1a0f13,var(--panel))}
+.sc-best{flex:none;min-width:54px;text-align:center}
+.sc-rank{font-size:26px;font-weight:900;line-height:1;color:var(--warn);text-shadow:0 0 10px rgba(255,207,62,.5)}
+.sc-time{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:4px}
+.sc-new{display:inline-block;font-size:11px;font-weight:900;letter-spacing:.1em;color:var(--bg);background:var(--cyan);border-radius:6px;padding:3px 7px}
+
+/* ---------- achievements ---------- */
+.ov-inner.top{margin:0}
+.ach-head{display:flex;align-items:center;gap:12px}
+.back{flex:none;width:48px;height:48px;border-radius:12px;border:1px solid var(--line);background:var(--panel);font-size:20px;display:grid;place-items:center}
+.ach-head h2{margin:0;font-size:20px;font-weight:900;color:var(--warn)}
+.ach-head .cnt{margin-left:auto;font-family:var(--mono);font-size:18px;font-weight:800}
+.ach-bar{height:8px;border-radius:999px;background:#0a0d11;border:1px solid var(--line);overflow:hidden}
+.ach-bar>div{height:100%;background:linear-gradient(90deg,var(--warn),var(--human));box-shadow:0 0 10px rgba(255,207,62,.6)}
+.ach-list{display:flex;flex-direction:column;gap:8px}
+.ach-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:var(--panel)}
+.ach-item .ic{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:24px;background:#0a0d11}
+.ach-item .t{font-size:14px;font-weight:800}
+.ach-item .d{font-size:12px;color:var(--dim);margin-top:2px;line-height:1.45}
+.ach-item.got{border-color:rgba(255,207,62,.45)}
+.ach-item.got .t{color:var(--warn)}
+.ach-item.locked .ic{filter:grayscale(1);opacity:.35}
+.ach-item.locked .t{color:#6b7684}
+
+/* ---------- mission splash ---------- */
+.mission-ov{
+  justify-content:center;align-items:center;text-align:center;
+  background:rgba(5,7,10,.97);animation:mIn .35s ease-out;
+}
+.mission-ov.out{animation:mOut .4s ease-in forwards}
+@keyframes mIn{from{opacity:0;transform:scale(1.06)}to{opacity:1;transform:none}}
+@keyframes mOut{to{opacity:0;transform:scale(.96)}}
+.m-stage{font-size:14px;font-weight:800;letter-spacing:.4em;color:var(--cyan)}
+.m-label{
+  margin:18px auto 10px;display:inline-block;font-size:13px;font-weight:900;letter-spacing:.3em;
+  color:var(--bg);background:var(--warn);padding:4px 12px;border-radius:6px;
+  box-shadow:0 0 16px rgba(255,207,62,.55);
+}
+.m-lead{font-size:clamp(18px,5.6vw,24px);font-weight:700;color:var(--text);line-height:1.5}
+.m-goal{
+  margin-top:14px;font-size:min(7.6vw,36px);font-weight:900;line-height:1.35;
+  display:flex;flex-direction:column;align-items:center;white-space:nowrap;
+  color:var(--neon);text-shadow:0 0 12px rgba(57,255,154,.8),0 0 32px rgba(57,255,154,.35);
+}
+.m-goal em{font-style:normal;color:var(--warn);text-shadow:0 0 12px rgba(255,207,62,.8)}
+.m-memo{margin-top:18px;display:flex;flex-direction:column;gap:6px;width:100%;max-width:340px}
+.m-memo:empty{display:none}
+.m-memo div{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:7px 12px;border-radius:10px;background:var(--panel);border:1px solid var(--line);color:#aab6c3}
+.m-memo b{color:var(--warn);font-family:var(--mono);text-align:right}
+.m-tap{margin-top:28px;font-size:12px;color:var(--dim);animation:blink 1.2s steps(1) infinite}
+@media (max-height:600px){
+  .callinfo{padding:4px 0}
+  .avatar{width:42px;height:42px;font-size:21px}
+  .timer{font-size:20px}
+  .inputline{height:24px;font-size:17px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <span class="chip" id="stageChip">STAGE 1</span>
+    <div class="mission" id="missionBar"></div>
+    <button class="homebtn" id="homeBtn">🏠HOME</button>
+    <button class="icon-btn" id="muteBtn" aria-label="サウンド切替">🔊</button>
+  </header>
+
+  <section class="callinfo">
+    <div class="avatar" id="avatar">🤖</div>
+    <div class="who">
+      <div class="name" id="company"></div>
+      <div class="sub">0120-XXX-XXX ・ 自動音声</div>
+    </div>
+    <div class="timerbox">
+      <div class="timer" id="timer">00:00</div>
+      <div class="status" id="status">待機中</div>
+    </div>
+  </section>
+
+  <div class="memo" id="memo" hidden></div>
+
+  <section class="screen">
+    <div class="speaker" id="speaker">AI自動音声ガイダンス</div>
+    <div class="subtitle" id="subtitle"></div>
+    <div class="hold" id="holdPanel" hidden>
+      <div class="holdlabel"><span class="note">♪</span>保留中…<span class="note">♫</span></div>
+    </div>
+    <div class="hint" id="hint" hidden>💡 抜け出せない？「やり直す」で最初から！</div>
+  </section>
+
+  <div class="inputline" id="inputDisp"></div>
+
+  <section class="pad" id="pad"></section>
+
+  <div class="controls">
+    <button class="retry" id="retryBtn" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+      やり直す
+    </button>
+    <button class="hang" id="hangBtn" disabled>
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>
+      切る
+    </button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <div class="achtoast" id="achToast"></div>
+
+  <!-- mission splash -->
+  <div class="ov mission-ov" id="missionOv" hidden>
+    <div class="m-stage" id="mStage">STAGE 1</div>
+    <div class="m-label">MISSION</div>
+    <div class="m-lead" id="mLead"></div>
+    <div class="m-goal" id="mGoal"></div>
+    <div class="m-memo" id="mMemo"></div>
+    <div class="m-tap">タップでスタート</div>
+  </div>
+
+  <!-- home -->
+  <div class="ov" id="homeOv">
+    <div class="ov-inner">
+      <div class="logo">
+        <div class="small">CALL CENTER ESCAPE</div>
+        <h1>オペレーターに<br>繋げ！</h1>
+      </div>
+      <div class="sec-title">STAGE SELECT</div>
+      <div class="stage-list" id="stageList"></div>
+      <button class="btn ach" id="achBtn">🏆 実績 <span class="cnt" id="achCount">0 / 20</span></button>
+      <div class="card">
+        <div class="lbl">ルール</div>
+        <ul>
+          <li>ガイダンスを最後まで聞いて、ダイアルで番号を選べ</li>
+          <li><b>喋り終わる前に押すと</b>怒られて最初から</li>
+          <li><b>Web・SMS誘導</b>に乗ると即切断（ゲームオーバー）</li>
+          <li>間違えると<b>たらい回し</b>。「やり直す」で最初から</li>
+          <li>保留音は<b>耐えろ</b>。ボタンを押すと…？</li>
+          <li>番号の入力は<b>メモ</b>を見て、最後に＃。＊で消去</li>
+        </ul>
+      </div>
+      <a class="btn sub more" href="https://red-freegames.github.io/">🎮 他のゲームを見る</a>
+      <a class="fb-link" id="fbHome" target="_blank" rel="noopener">💬 要望・バグ報告はこちら</a>
+      <footer class="site-foot">
+        <a href="https://buymeacoffee.com/red_freegames" target="_blank" rel="noopener">開発者にコーヒーを奢る☕</a>
+        <span>配信・動画利用大歓迎！商用利用OK</span>
+        <a href="https://red-freegames.github.io/privacy.html" target="_blank" rel="noopener">プライバシー</a>
+      </footer>
+    </div>
+  </div>
+
+  <!-- achievements -->
+  <div class="ov" id="achOv" hidden>
+    <div class="ov-inner top">
+      <div class="ach-head">
+        <button class="back" id="achBack" aria-label="ホームへ戻る">←</button>
+        <h2>🏆 実績</h2>
+        <span class="cnt" id="achCount2">0 / 20</span>
+      </div>
+      <div class="ach-bar"><div id="achBar"></div></div>
+      <div class="ach-list" id="achList"></div>
+    </div>
+  </div>
+
+  <!-- game over -->
+  <div class="ov over" id="overOv" hidden>
+    <div class="ov-inner">
+      <div class="big"><div class="tag">CALL DISCONNECTED</div><h2>GAME OVER</h2></div>
+      <div class="reason" id="overReason"></div>
+      <div class="stats">
+        <div class="stat"><div class="v" id="overTime">00:00</div><div class="n">通話時間</div></div>
+        <div class="stat"><div class="v" id="overRedial">0</div><div class="n">やり直し</div></div>
+      </div>
+      <button class="btn call" id="overRetry">もう一度かける</button>
+      <button class="btn sub" id="overHome">ホームへ</button>
+      <a class="btn sub more" href="https://red-freegames.github.io/">🎮 他のゲームを見る</a>
+      <a class="fb-link" id="fbOver" target="_blank" rel="noopener">💬 要望・バグ報告はこちら</a>
+    </div>
+  </div>
+
+  <!-- clear -->
+  <div class="ov clear" id="clearOv" hidden>
+    <div class="ov-inner">
+      <div class="big"><div class="tag">👤 HUMAN CONNECTED</div><h2>STAGE CLEAR!</h2></div>
+      <div class="newrec" id="newRec" hidden>NEW RECORD</div>
+      <div class="reason" id="clMsg" style="color:#ffe7cf"></div>
+      <div class="stats">
+        <div class="stat"><div class="v" id="clTime">00:00</div><div class="n">経過時間</div></div>
+        <div class="stat rank"><div class="v" id="clRank">S</div><div class="n">ランク</div></div>
+        <div class="stat"><div class="v" id="clRedial">0</div><div class="n">やり直し</div></div>
+        <div class="stat"><div class="v" id="clMiss">0</div><div class="n">怒られ／たらい回し</div></div>
+      </div>
+      <button class="btn call" id="clNext">次のステージへ ▶</button>
+      <button class="btn x" id="xBtn">𝕏 でシェア</button>
+      <div class="row">
+        <button class="btn sub" id="clRetry">リトライ</button>
+        <button class="btn sub" id="clHome">ホームへ</button>
+      </div>
+      <a class="btn sub more" href="https://red-freegames.github.io/">🎮 他のゲームを見る</a>
+      <a class="fb-link" id="fbClear" target="_blank" rel="noopener">💬 要望・バグ報告はこちら</a>
+    </div>
+  </div>
+
+  <!-- HOME：通話中は確認してからホームへ -->
+  <div class="ov confirm-ov" id="homeConfirm" hidden>
+    <div class="hcard">
+      <h2>ホームに戻りますか？</h2>
+      <p>通話は切れて、このステージは最初からになります</p>
+      <div class="row">
+        <button class="btn sub" id="homeNo">続ける</button>
+        <button class="btn danger" id="homeYes">🏠 戻る</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = (s) => document.querySelector(s);
+
+// ?speed=0.1 などで全演出を短縮（デバッグ用）
+const params = new URLSearchParams(location.search);
+const SPEED = Math.min(1, Math.max(0.02, parseFloat(params.get('speed')) || 1));
+const T = (ms) => ms * SPEED;
+const CHAR_MS = 42;
+
+/* ================= ステージ定義 =================
+   ステージを増やすときはこの配列に追加する（3つごとに 初級→中級→上級→鬼）。
+   ノードの種類:
+     メニュー : { text, routes: { キー: 遷移先 } }
+     番号入力 : { type: 'input', text, answer: '1234', next: 遷移先 }   … 入力して最後に＃
+     担当者   : { type: 'human', who: { name, icon }, lines: [...], next: 遷移先 }   … 喋り終えたら自動で next へ
+   遷移先: ノードID / 'web'（誘導トラップ） / 'loop:名前'（たらい回し）
+          'hold'（保留→最後の担当者に繋がってクリア） / 'hold>ノードID'（保留→そのノードへ。転送用）
+   ノードに company を書くと、そのノードで通話先の表示名が変わる（転送先の部署名など）。
+   memo はプレイヤーの手元情報（画面上部とステージ開始時に表示）。
+   path はテスト・最短時間計算用の正解ルート（入力ノードは '1234#' のように押すキーを並べる）。 */
+const STAGES = [
+  /* ---------------- 初級 ---------------- */
+  {
+    id: 1,
+    title: 'カード不正利用',
+    desc: '不正利用されたカードを止めろ',
+    company: 'ミライカード サポート',
+    lead: 'カードの不正利用を発見！',
+    goal: ['<em>人間の</em>オペレーターに', 'カードを止めてもらえ！'],
+    bar: '不正利用カードを<b>人間に</b>止めてもらえ',
+    trap: 'Web',
+    webLine: 'ご入力ありがとうございます。お手続き用URLをSMSでお送りしました。Webをご利用ください。',
+    operator: '佐藤', operatorIcon: '👩‍💼',
+    humanLine: 'お電話ありがとうございます。担当の佐藤です。',
+    clearMsg: '担当の佐藤さんがカードを停止してくれた。<br>人間って、あたたかい。',
+    hold: { ms: 10000, webOffer: true },
+    start: 'top',
+    path: [['top', '3'], ['trouble', '4'], ['fraud', '*'], ['confirm', '0']],
+    nodes: {
+      top: {
+        text: 'お電話ありがとうございます。ミライカード カスタマーセンターです。この通話は、サービス品質向上のため録音させていただきます。ご用件を番号でお選びください。ご利用代金・お支払いについては【1】を。ポイント・特典については【2】を。カードの紛失・盗難・不正利用については【3】を。住所変更などのお手続きは【5】を。その他のお問い合わせは【9】を、押してください。',
+        routes: { '3': 'trouble', '1': 'loop:pay', '2': 'loop:point', '5': 'loop:addr', '9': 'loop:other' },
+      },
+      trouble: {
+        text: 'カードの紛失・盗難・不正利用に関するお問い合わせですね。カードの利用停止は、Webサイトから24時間いつでもお手続きいただけます。お手続き用URLをSMSで受け取る場合は【1】を。紛失・盗難の場合は【2】を。身に覚えのないご利用がある場合は【4】を、押してください。',
+        routes: { '1': 'web', '2': 'loop:lost', '4': 'fraud' },
+      },
+      fraud: {
+        text: '身に覚えのないご利用ですね。まずはAIアシスタント「ミライくん」がお話を伺います。AIアシスタントをご利用の場合は【1】を。ご利用明細の読み上げをご希望の場合は【2】を、押してください。……なお、オペレーターとのお話をご希望の方は、【＊】を押してください。',
+        routes: { '*': 'confirm', '1': 'loop:ai', '2': 'loop:meisai' },
+      },
+      confirm: {
+        text: 'オペレーターにお繋ぎします。なお、ただいま大変混み合っております。Webでのお手続きなら、待ち時間なしでカードを停止できます。Webでのお手続きをご希望の場合は【1】を。それでもオペレーターをご希望の方は、【0】を押してください。',
+        routes: { '1': 'web', '0': 'hold' },
+      },
+    },
+    loops: {
+      pay: ['お支払いについてのご案内です。ご利用代金は毎月末日締め、翌月27日のお支払いです。リボ払いへの変更は、Webサイトから24時間お手続きいただけます。'],
+      point: ['ミライポイントのご案内です。ただいま、ポイント2倍キャンペーンを実施中です。キャンペーンの詳細は、ホームページをご覧ください。', 'ポイントの交換は、Webサイトの会員ページから承っております。'],
+      addr: ['お届け先住所の変更は、Webサイトの会員ページ、または郵送にて承っております。変更届の郵送をご希望の場合は、お手元に郵便番号をご用意のうえ、おかけ直しください。'],
+      other: ['その他のお問い合わせですね。よくあるご質問は、ホームページに掲載しております。ホームページをご覧になっても解決しない場合は、ホームページのお問い合わせフォームをご利用ください。'],
+      lost: ['紛失・盗難の受付窓口です。最寄りの警察署へ届け出のうえ、受理番号をご用意ください。ご用意ができましたら、改めておかけ直しください。'],
+      ai: ['こんにちは！AIアシスタントのミライくんです！ご用件を、ひとことでお話しください。', '……申し訳ありません。よく聞き取れませんでした。もう一度、ゆっくりとお話しください。'],
+      meisai: ['ご利用明細を読み上げます。10月1日、コンビニエンスストア、298円。10月1日、コンビニエンスストア、150円。10月2日、コンビニエンスストア、298円。10月2日、ドラッグストア、1,280円。10月3日、コンビニエンスストア、298円。'],
+    },
+    randomLoops: ['pay', 'point', 'addr', 'other'],
+    loopAch: { ai: 'ai_chat' },
+  },
+  {
+    id: 2,
+    title: 'スマホ故障',
+    desc: '壊れたスマホの修理を申し込め',
+    company: 'ミライモバイル サポート',
+    lead: 'スマホの画面が真っ暗に！',
+    goal: ['<em>人間の</em>修理担当者に', '修理を受け付けてもらえ！'],
+    bar: 'スマホの修理を<b>人間に</b>受け付けてもらえ',
+    trap: 'チャット',
+    webLine: 'ご入力ありがとうございます。チャットサポートのURLをSMSでお送りしました。チャットをご利用ください。',
+    operator: '田中', operatorIcon: '👨‍🔧',
+    humanLine: 'お待たせいたしました。修理受付の田中です。',
+    clearMsg: '田中さんが代替機の手配までしてくれた。<br>画面は暗くても、心は明るい。',
+    hold: { ms: 7000, webOffer: false },
+    start: 'top',
+    path: [['top', '3'], ['repair', '2']],
+    nodes: {
+      top: {
+        text: 'お電話ありがとうございます。ミライモバイル サポートセンターです。料金・プランについては【1】を。機種変更については【2】を。故障・修理については【3】を。ご解約については【9】を、押してください。',
+        routes: { '3': 'repair', '1': 'loop:plan', '2': 'loop:kishu', '9': 'loop:kaiyaku' },
+      },
+      repair: {
+        text: '故障・修理のご相談ですね。まずは、端末の再起動をお試しください。チャットサポートのURLをSMSで受け取る場合は【1】を。修理担当者とお話しになる場合は【2】を、押してください。',
+        routes: { '1': 'web', '2': 'hold' },
+      },
+    },
+    loops: {
+      plan: ['料金プランのご案内です。ただいま、ギガ使い放題プランが大変お得になっております。詳しくはWebサイトをご覧ください。'],
+      kishu: ['機種変更は、オンラインショップなら事務手数料無料！ぜひWebサイトをご利用ください。'],
+      kaiyaku: ['ご解約ですね。……お待ちください！今なら、お客様だけの特別割引プランをご用意しております！', 'まだ解約は早いかもしれません。もう一度、よーくお考えください。'],
+    },
+    randomLoops: ['plan', 'kishu'],
+    loopAch: { kaiyaku: 'hikitome' },
+  },
+  {
+    id: 3,
+    title: '荷物が届かない',
+    desc: '「配達完了」なのに届いていない',
+    company: 'ミライ急便 お客様センター',
+    lead: '「配達完了」なのに荷物がない！',
+    goal: ['<em>人間の</em>スタッフに', '荷物を探してもらえ！'],
+    bar: '消えた荷物を<b>人間に</b>探してもらえ',
+    trap: 'LINE',
+    webLine: 'ご入力ありがとうございます。LINEの友だち追加URLをSMSでお送りしました。LINEをご利用ください。',
+    operator: '鈴木', operatorIcon: '🧑‍💼',
+    humanLine: 'お電話かわりました。調査担当の鈴木です。',
+    clearMsg: '鈴木さんがドライバーに確認してくれた。<br>荷物は隣の家にあった。',
+    hold: { ms: 8000, webOffer: false },
+    start: 'top',
+    path: [['top', '2'], ['status', '5']],
+    nodes: {
+      top: {
+        text: 'お電話ありがとうございます。ミライ急便です。再配達のご依頼は、LINEで24時間受付中です。再配達のご依頼は【1】を。お荷物の配達状況の確認は【2】を。集荷のご依頼は【3】を。それ以外のお問い合わせは【0】を、押してください。',
+        routes: { '1': 'web', '2': 'status', '3': 'loop:shuka', '0': 'loop:other' },
+      },
+      status: {
+        text: '配達状況の確認ですね。お届け予定日の確認は【1】を。「配達完了」となっているのに、お荷物が届いていない場合は【5】を、押してください。',
+        routes: { '1': 'loop:yotei', '5': 'hold' },
+      },
+    },
+    loops: {
+      shuka: ['集荷のご依頼ですね。集荷のご依頼は、LINEまたはWebサイトから承っております。'],
+      other: ['その他のお問い合わせですね。よくあるご質問は、ホームページに掲載しております。'],
+      yotei: ['お届け予定日のご案内です。お問い合わせ伝票番号12桁を、ゆっくりと入力してください。……入力が確認できませんでした。'],
+    },
+    randomLoops: ['shuka', 'other'],
+    loopAch: {},
+  },
+
+  /* ---------------- 中級 ---------------- */
+  {
+    id: 4,
+    title: '電気の引っ越し',
+    desc: '新居でも電気を使えるようにしろ',
+    company: 'ミライ電力 お客様センター',
+    lead: '来週、引っ越し！',
+    goal: ['<em>人間に</em>電気の契約を', '新居へ移してもらえ！'],
+    bar: '電気の契約を<b>人間に</b>新居へ移してもらえ',
+    memo: [['お客様番号', '3150'], ['新住所の郵便番号', '150-0041']],
+    trap: 'Web',
+    webLine: 'ご入力ありがとうございます。お手続き用URLをSMSでお送りしました。Webをご利用ください。',
+    operator: '高橋', operatorIcon: '👩‍💼',
+    humanLine: 'お待たせいたしました。お引っ越し受付の高橋です。',
+    clearMsg: '高橋さんが新居の電気を手配してくれた。<br>引っ越し初日から、明かりがつく。',
+    hold: { ms: 9000, webOffer: true },
+    start: 'top',
+    path: [['top', '3'], ['move', '2'], ['custno', '3150#'], ['zip', '1500041#'], ['confirm', '1']],
+    nodes: {
+      top: {
+        text: 'お電話ありがとうございます。ミライ電力です。停電・緊急のご連絡は【1】。料金のお問い合わせは【2】。お引っ越しに伴うお手続きは【3】。新規のお申し込みは【4】を、押してください。',
+        routes: { '1': 'loop:teiden', '2': 'loop:ryokin', '3': 'move', '4': 'loop:shinki' },
+      },
+      move: {
+        text: 'お引っ越しのお手続きですね。電気の使用停止のみの場合は【1】を。停止と、新しいご住所での使用開始を、同時にお手続きする場合は【2】を。Webでのお手続きをご希望の場合は【9】を、押してください。',
+        routes: { '1': 'loop:teishi', '2': 'custno', '9': 'web' },
+      },
+      custno: { type: 'input', text: 'お客様番号4桁を入力し、最後に【＃】を押してください。', answer: '3150', next: 'zip' },
+      zip: { type: 'input', text: '新しいご住所の郵便番号7桁を入力し、最後に【＃】を押してください。', answer: '1500041', next: 'confirm' },
+      confirm: {
+        text: 'お客様番号3150、新しいご住所の郵便番号、150の0041で承ります。お間違いなければ【1】を。訂正する場合は【2】を、押してください。',
+        routes: { '1': 'hold', '2': 'custno' },
+      },
+    },
+    loops: {
+      teiden: ['停電情報をお知らせします。現在、ミライ市内で停電は発生しておりません。'],
+      ryokin: ['料金のお問い合わせですね。ご請求金額は、Webの会員ページでご確認いただけます。'],
+      shinki: ['新規のお申し込みは、Webサイトから承っております。今なら、ポイント還元キャンペーンを実施中です。'],
+      teishi: ['電気の使用停止のみのお手続きは、Webサイトから24時間承っております。お引っ越しの1週間前までに、お手続きください。'],
+    },
+    randomLoops: ['ryokin', 'shinki'],
+    loopAch: {},
+  },
+  {
+    id: 5,
+    title: '事故の連絡',
+    desc: '駐車場でぶつけられた',
+    company: 'ミライ損保 事故受付センター',
+    lead: '駐車場でぶつけられた！',
+    goal: ['<em>人間の</em>担当者に', '事故を受け付けさせろ！'],
+    bar: '事故を<b>人間に</b>受け付けさせろ',
+    memo: [['証券番号の下4桁', '7702'], ['ケガ人', 'なし'], ['事故の相手', 'あり（車）']],
+    trap: 'アプリ',
+    webLine: 'ご入力ありがとうございます。アプリのダウンロードURLをSMSでお送りしました。アプリから事故をご報告ください。',
+    operator: '伊藤', operatorIcon: '👨‍💼',
+    humanLine: 'お待たせいたしました。事故受付の伊藤です。まずは、お怪我がなくて何よりです。',
+    clearMsg: '伊藤さんが相手方との連絡を引き受けてくれた。<br>へこんだバンパーも、少しだけ誇らしい。',
+    hold: { ms: 9000, webOffer: false },
+    start: 'top',
+    path: [['top', '1'], ['injury', '2'], ['other', '1'], ['policy', '7702#'], ['app', '0']],
+    nodes: {
+      top: {
+        text: 'ミライ損保 事故受付センターです。事故のご連絡は【1】。ご契約内容の確認は【2】。ロードサービスのご依頼は【3】を、押してください。',
+        routes: { '1': 'injury', '2': 'loop:keiyaku', '3': 'loop:road' },
+      },
+      injury: {
+        text: '事故のご連絡ですね。お怪我をされた方はいらっしゃいますか。いらっしゃる場合は【1】を。いらっしゃらない場合は【2】を、押してください。',
+        routes: { '1': 'loop:kyukyu', '2': 'other' },
+      },
+      other: {
+        text: '相手のいる事故ですか。相手がいる場合は【1】を。単独事故の場合は【2】を、押してください。',
+        routes: { '1': 'policy', '2': 'loop:tandoku' },
+      },
+      policy: { type: 'input', text: '保険証券番号の、下4桁を入力し、最後に【＃】を押してください。', answer: '7702', next: 'app' },
+      app: {
+        text: '事故のご報告は、スマホアプリから写真付きで行うと、スムーズです。アプリのダウンロードURLをSMSで受け取る場合は【1】を。担当者とお話しになる場合は【0】を、押してください。',
+        routes: { '1': 'web', '0': 'hold' },
+      },
+    },
+    loops: {
+      keiyaku: ['ご契約内容の確認は、ミライ損保アプリから24時間ご確認いただけます。'],
+      road: ['ロードサービスのご依頼ですね。現在地の住所を、ゆっくりお話しください。……音声を認識できませんでした。'],
+      kyukyu: ['お怪我をされた方がいらっしゃる場合は、ただちに119番へご連絡ください。こちらは、事故受付の自動音声です。'],
+      tandoku: ['単独事故の受付です。車両保険のご契約内容によっては、補償の対象外となる場合がございます。詳しくは、ご契約内容をご確認ください。'],
+    },
+    randomLoops: ['keiyaku', 'road'],
+    loopAch: {},
+  },
+  {
+    id: 6,
+    title: 'ネットが繋がらない',
+    desc: 'ルーターが赤く点滅している',
+    company: 'ミライ光 サポートセンター',
+    lead: 'ネットが突然つながらない！',
+    goal: ['<em>人間の</em>技術者に', '故障を調べてもらえ！'],
+    bar: '回線の故障を<b>人間に</b>調べてもらえ',
+    memo: [['契約ID', '5566'], ['ルーターのランプ', '赤く点滅'], ['再起動', 'もう試した']],
+    trap: 'チャット',
+    webLine: 'ご入力ありがとうございます。チャットのURLをSMSでお送りしました。チャットでご連絡ください。',
+    operator: '渡辺', operatorIcon: '🧑‍🔧',
+    humanLine: 'お待たせしました。技術担当の渡辺です。回線、すぐに調べますね。',
+    clearMsg: '渡辺さんが遠隔で回線を直してくれた。<br>ランプが緑に変わった瞬間、ちょっと泣いた。',
+    hold: { ms: 9000, webOffer: true },
+    start: 'top',
+    path: [['top', '2'], ['lamp', '3'], ['reboot', '1'], ['cid', '5566#'], ['tech', '*']],
+    nodes: {
+      top: {
+        text: 'ミライ光 サポートセンターです。ご契約・料金については【1】。インターネットに繋がらない場合は【2】。オプションサービスについては【3】を、押してください。',
+        routes: { '1': 'loop:keiyaku', '2': 'lamp', '3': 'loop:option' },
+      },
+      lamp: {
+        text: 'インターネットに繋がらないのですね。ルーターのランプの状態をお選びください。すべて消えている場合は【1】。緑に点灯している場合は【2】。赤く点滅している場合は【3】を、押してください。',
+        routes: { '1': 'loop:dengen', '2': 'loop:saikidou', '3': 'reboot' },
+      },
+      reboot: {
+        text: 'ルーターの再起動は、お試しいただけましたか。お試しいただいた場合は【1】を。まだの場合は【2】を、押してください。',
+        routes: { '1': 'cid', '2': 'loop:saikidou' },
+      },
+      cid: { type: 'input', text: 'ご契約IDの4桁を入力し、最後に【＃】を押してください。', answer: '5566', next: 'tech' },
+      tech: {
+        text: '回線の故障の可能性がございます。なお、故障のご連絡は、Webのチャットでも承っております。チャットをご希望の場合は【1】を。技術担当者とお話しになる場合は【＊】を、押してください。',
+        routes: { '1': 'web', '*': 'hold' },
+      },
+    },
+    loops: {
+      keiyaku: ['ご契約・料金のご確認は、ミライ光の会員ページから承っております。'],
+      option: ['オプションサービスのご案内です。今なら、セキュリティパックが3か月無料！お申し込みはWebから。'],
+      dengen: ['ルーターのランプがすべて消えている場合は、電源コードがコンセントに差し込まれているか、ご確認ください。'],
+      saikidou: ['ルーターの電源を抜き、10秒待ってから、もう一度差し込んでください。その後、10分ほどお待ちください。……お待ちください。'],
+    },
+    randomLoops: ['keiyaku', 'option'],
+    loopAch: {},
+  },
+
+  /* ---------------- 上級 ---------------- */
+  {
+    id: 7,
+    title: '乗り遅れた！',
+    desc: '今日中の別の便に振り替えろ',
+    company: 'ミライ航空 予約センター',
+    lead: '乗り継ぎ便に乗り遅れた！',
+    goal: ['<em>人間に</em>頼んで今日の', '別の便に振り替えろ！'],
+    bar: '今日の別便に<b>人間に</b>振り替えてもらえ',
+    memo: [['予約番号', '8807'], ['搭乗日', '11月3日'], ['人数', '1名'], ['マイレージ会員', 'ではない']],
+    trap: 'Web',
+    webLine: 'ご入力ありがとうございます。WebサイトのURLをSMSでお送りしました。Webで空席をお探しください。',
+    operator: '小林', operatorIcon: '👩‍✈️',
+    humanLine: 'お待たせいたしました。予約センターの小林です。本日の最終便に、お席をお取りできますよ。',
+    clearMsg: '小林さんが最終便の窓側席を取ってくれた。<br>空港のベンチで、そっとガッツポーズ。',
+    hold: { ms: 11000, webOffer: true },
+    start: 'top',
+    path: [['top', '2'], ['change', '3'], ['today', '5'], ['rsv', '8807#'], ['date', '1103#'], ['pax', '1'], ['mile', '2'], ['final', '0']],
+    nodes: {
+      top: {
+        text: 'お電話ありがとうございます。ミライ航空 予約センターです。新規のご予約は【1】。ご予約の変更・取り消しは【2】。マイレージについては【3】。手荷物・その他のお問い合わせは【4】を、押してください。',
+        routes: { '1': 'loop:shinki', '2': 'change', '3': 'loop:mileage', '4': 'loop:nimotsu' },
+      },
+      change: {
+        text: 'ご予約の変更・取り消しですね。ご予約の取り消しは【1】。日付・便の変更は【2】。本日ご出発の便に関するお問い合わせは【3】を、押してください。',
+        routes: { '1': 'loop:torikeshi', '2': 'loop:henkou', '3': 'today' },
+      },
+      today: {
+        text: '本日ご出発の便ですね。運航状況の確認は【1】を。乗り遅れた場合、または乗り継ぎができなかった場合は【5】を、押してください。',
+        routes: { '1': 'loop:unkou', '5': 'rsv' },
+      },
+      rsv: { type: 'input', text: '予約番号4桁を入力し、最後に【＃】を押してください。', answer: '8807', next: 'date' },
+      date: { type: 'input', text: 'ご搭乗日を、月と日の4桁で入力し、最後に【＃】を押してください。例えば、1月5日の場合は、0105です。', answer: '1103', next: 'pax' },
+      pax: {
+        text: 'ご搭乗のお客様の人数を、1から9の数字で押してください。',
+        routes: { '1': 'mile', '2': 'loop:ninzu', '3': 'loop:ninzu', '4': 'loop:ninzu', '5': 'loop:ninzu', '6': 'loop:ninzu', '7': 'loop:ninzu', '8': 'loop:ninzu', '9': 'loop:ninzu' },
+      },
+      mile: {
+        text: 'マイレージ会員の方は【1】を。会員でない方は【2】を、押してください。なお、今ならアプリから会員登録で、500マイルプレゼント！アプリのURLをSMSで受け取る場合は【9】を、押してください。',
+        routes: { '1': 'loop:mile', '2': 'final', '9': 'web' },
+      },
+      final: {
+        text: '振替のご相談は、担当者がお伺いします。ただいま大変混み合っており、Webなら待ち時間なしで、空席のある便をお選びいただけます。Webをご希望の場合は【1】を。担当者をご希望の場合は【0】を、押してください。',
+        routes: { '1': 'web', '0': 'hold' },
+      },
+    },
+    loops: {
+      shinki: ['新規のご予約は、ミライ航空のWebサイト・アプリが便利です。'],
+      mileage: ['マイレージのご案内です。貯まったマイルは、特典航空券や、提携ポイントに交換できます。'],
+      nimotsu: ['手荷物のお問い合わせですね。お預けの手荷物は、おひとり様2個まで、無料でお預かりいたします。'],
+      torikeshi: ['ご予約の取り消しですね。取り消しには、所定の取消手数料がかかります。手数料の詳細は、Webサイトをご覧ください。'],
+      henkou: ['日付・便の変更は、Webサイトの予約確認ページから承っております。なお、本日ご出発の便の変更は、こちらではお受けできません。'],
+      unkou: ['運航状況をお知らせします。本日のミライ航空の便は、すべて定刻どおり運航しております。'],
+      ninzu: ['2名様以上のご予約の変更は、団体予約センターで承ります。団体予約センターの受付時間は、平日の10時から17時です。'],
+      mile: ['マイレージ会員番号10桁を、入力してください。……入力が確認できませんでした。'],
+    },
+    randomLoops: ['shinki', 'mileage', 'nimotsu'],
+    loopAch: {},
+  },
+  {
+    id: 8,
+    title: '振込ミス',
+    desc: '間違えて送ったお金を取り戻せ',
+    company: 'ミライ銀行 コールセンター',
+    lead: '振込先を間違えた！3万円が…',
+    goal: ['<em>人間に</em>お金を', '取り戻してもらえ！'],
+    bar: '誤送金を<b>人間に</b>組み戻してもらえ',
+    memo: [['支店番号', '123'], ['口座番号', '4455667'], ['生年月日', '1992年7月5日'], ['振込日', '10月28日']],
+    trap: 'アプリ',
+    webLine: 'ご入力ありがとうございます。ミライ銀行アプリのURLをSMSでお送りしました。アプリをご利用ください。',
+    operator: '中村', operatorIcon: '👨‍💼',
+    humanLine: 'お電話かわりました。中村です。組戻しのお手続き、確かに承ります。',
+    clearMsg: '中村さんが組戻しを手配してくれた。<br>3万円が、帰ってくる。',
+    hold: { ms: 11000, webOffer: true },
+    start: 'top',
+    path: [['top', '2'], ['furikomi', '6'], ['shiten', '123#'], ['koza', '4455667#'], ['birth', '920705#'], ['date', '1028#'], ['kakunin', '1'], ['final', '9']],
+    nodes: {
+      top: {
+        text: 'お電話ありがとうございます。ミライ銀行です。残高・入出金明細は【1】。お振り込みについては【2】。カード・通帳の紛失は【3】。各種お手続きは【4】を、押してください。',
+        routes: { '1': 'loop:zandaka', '2': 'furikomi', '3': 'loop:funshitsu', '4': 'loop:tetsuduki' },
+      },
+      furikomi: {
+        text: 'お振り込みに関するお問い合わせですね。振込手数料のご案内は【1】。振込予約の取り消しは【2】。誤ったお振り込みの、組戻しのお申し込みは【6】を、押してください。',
+        routes: { '1': 'loop:tesuryo', '2': 'loop:yoyaku', '6': 'shiten' },
+      },
+      shiten: { type: 'input', text: 'ご本人確認を行います。お取引の、支店番号3桁を入力し、最後に【＃】を押してください。', answer: '123', next: 'koza' },
+      koza: { type: 'input', text: '口座番号7桁を入力し、最後に【＃】を押してください。', answer: '4455667', next: 'birth' },
+      birth: { type: 'input', text: 'ご登録の生年月日を、西暦の下2桁と、月日の、6桁で入力し、最後に【＃】を押してください。例えば、1990年1月5日の場合は、900105です。', answer: '920705', next: 'date' },
+      date: { type: 'input', text: 'お振り込みをされた日を、月と日の4桁で入力し、最後に【＃】を押してください。', answer: '1028', next: 'kakunin' },
+      kakunin: {
+        text: '組戻しには、所定の手数料がかかります。また、受取人の同意が必要となります。ご了承いただける場合は【1】を。了承しない場合は【2】を、押してください。',
+        routes: { '1': 'final', '2': 'loop:fushochi' },
+      },
+      final: {
+        text: '担当者にお繋ぎします。なお、組戻しのお申し込みは、ミライ銀行アプリからも可能です。アプリをご利用の場合は【1】を。担当者をご希望の場合は【9】を、押してください。',
+        routes: { '1': 'web', '9': 'hold' },
+      },
+    },
+    loops: {
+      zandaka: ['残高・入出金明細は、ミライ銀行アプリで24時間ご確認いただけます。'],
+      funshitsu: ['カード・通帳の紛失ですね。ただちに利用を停止するため、紛失受付専用ダイヤルへおかけ直しください。'],
+      tetsuduki: ['各種お手続きは、お近くの支店窓口、またはアプリから承っております。'],
+      tesuryo: ['振込手数料のご案内です。ミライ銀行あては無料、他の銀行あては、1回につき、220円です。'],
+      yoyaku: ['振込予約の取り消しは、ミライ銀行アプリの、振込予約一覧から承っております。'],
+      fushochi: ['組戻しのお手続きを中止しました。ほかにご用件がございましたら、最初のメニューから、お選びください。……ほかにご用件がございましたら……'],
+    },
+    randomLoops: ['zandaka', 'tetsuduki'],
+    loopAch: {},
+  },
+  {
+    id: 9,
+    title: '代理で住民票',
+    desc: '祖母の住民票を郵送で請求しろ',
+    company: 'ミライ市役所 代表',
+    lead: '祖母の代わりに住民票を取りたい',
+    goal: ['<em>人間の</em>職員に', '郵送請求を確認しろ！'],
+    bar: '代理の郵送請求を<b>人間に</b>確認しろ',
+    memo: [['取りたいもの', '住民票の写し'], ['請求方法', '郵送'], ['請求者', '代理人（委任状あり）'], ['祖母の生年月日', '1949年3月14日']],
+    trap: 'コンビニ',
+    webLine: 'ご入力ありがとうございます。コンビニ交付のご案内をSMSでお送りしました。お近くのコンビニをご利用ください。',
+    operator: '加藤', operatorIcon: '🧑‍💼',
+    humanLine: 'お待たせしました。市民課の加藤です。代理人の郵送請求ですね、ご説明します。',
+    clearMsg: '加藤さんが、必要な書類を丁寧に教えてくれた。<br>おばあちゃんにも、いい報告ができる。',
+    hold: { ms: 12000, webOffer: false },
+    start: 'top',
+    path: [['top', '1'], ['cert', '1'], ['how', '2'], ['dairi', '2'], ['inin', '1'], ['birth', '19490314#'], ['final', '*']],
+    nodes: {
+      top: {
+        text: 'ミライ市役所です。この電話は、自動音声でご案内しています。各種証明書については【1】。税金については【2】。ごみ・環境については【3】。子育て・福祉については【4】。その他の窓口については【0】を、押してください。',
+        routes: { '1': 'cert', '2': 'loop:zei', '3': 'loop:gomi', '4': 'loop:kosodate', '0': 'loop:sonota' },
+      },
+      cert: {
+        text: '各種証明書ですね。住民票の写しは【1】。印鑑登録証明書は【2】。戸籍謄本・抄本は【3】。マイナンバーカードを使った、コンビニ交付のご案内は【8】を、押してください。',
+        routes: { '1': 'how', '2': 'loop:inkan', '3': 'loop:koseki', '8': 'web' },
+      },
+      how: {
+        text: '住民票の写しですね。窓口でのご請求は【1】を。郵送でのご請求は【2】を、押してください。',
+        routes: { '1': 'loop:madoguchi', '2': 'dairi' },
+      },
+      dairi: {
+        text: '郵送でのご請求ですね。ご本人、または同じ世帯の方からのご請求は【1】を。代理人からのご請求は【2】を、押してください。',
+        routes: { '1': 'loop:honnin', '2': 'inin' },
+      },
+      inin: {
+        text: '代理人からのご請求には、委任状が必要です。委任状をお持ちの場合は【1】を。お持ちでない場合は【2】を、押してください。',
+        routes: { '1': 'birth', '2': 'loop:ininjo' },
+      },
+      birth: { type: 'input', text: '住民票が必要な、ご本人の生年月日を、西暦から8桁で入力し、最後に【＃】を押してください。例えば、1990年1月5日の場合は、19900105です。', answer: '19490314', next: 'final' },
+      final: {
+        text: '市民課にお繋ぎします。なお、市民課の受付時間外の場合は、留守番電話に切り替わります。担当者とお話しになる場合は【＊】を、押してください。',
+        routes: { '*': 'hold' },
+      },
+    },
+    loops: {
+      zei: ['税金に関するお問い合わせは、税務課へおかけ直しください。税務課の番号は、市のホームページに掲載しております。'],
+      gomi: ['粗大ごみの収集は、インターネットの受付システムから承っております。'],
+      kosodate: ['子育て・福祉に関するご案内です。各種手当の申請は、マイナンバーカードを使って、オンラインで申請できます。'],
+      sonota: ['その他の窓口のご案内です。市役所の代表番号へおかけ直しください。……この電話は、市役所の代表番号です。'],
+      inkan: ['印鑑登録証明書は、ご本人が窓口でご請求ください。代理の場合は、印鑑登録証が必要です。'],
+      koseki: ['戸籍謄本・抄本は、本籍地の市区町村で請求できます。本籍地がミライ市以外の方は、本籍地へお問い合わせください。'],
+      madoguchi: ['窓口の受付時間は、平日の午前8時30分から、午後5時15分までです。土日祝日は、お休みです。'],
+      honnin: ['ご本人からの郵送請求は、市のホームページから請求書をダウンロードし、本人確認書類の写しを同封して、お送りください。'],
+      ininjo: ['代理人からのご請求には、委任状が必要です。委任状の様式は、市のホームページからダウンロードできます。ご用意のうえ、おかけ直しください。'],
+    },
+    randomLoops: ['zei', 'gomi', 'kosodate'],
+    loopAch: {},
+  },
+
+  /* ---------------- 鬼 ---------------- */
+  {
+    id: 10,
+    title: '海外でカード停止',
+    desc: '旅行先でカードが止められた',
+    company: 'ミライカード サポート',
+    lead: '旅行先のアメリカでカードが使えない！',
+    goal: ['<em>人間に</em>カードの', '制限を解除させろ！'],
+    bar: 'カードの利用制限を<b>人間に</b>解除させろ',
+    memo: [['カード番号の下4桁', '3344'], ['生年月日', '6月12日'], ['滞在国', 'アメリカ']],
+    trap: 'Web',
+    webLine: 'ご入力ありがとうございます。お手続き用URLをSMSでお送りしました。Webをご利用ください。',
+    operator: '山口', operatorIcon: '👩‍💼',
+    humanLine: 'お待たせいたしました。海外デスクの山口です。カードの制限、すぐに解除いたしますね。',
+    clearMsg: '山口さんが3秒でロックを解除してくれた。<br>最初からここに繋がっていれば…。',
+    hold: { ms: 9000, webOffer: true },
+    start: 'top',
+    path: [['top', '3'], ['abroad', '2'], ['card', '3344#'], ['birth', '0612#'], ['wait', '0'], ['desk_top', '2'], ['desk_card', '3344#'], ['desk_country', '3']],
+    nodes: {
+      top: {
+        text: 'お電話ありがとうございます。ミライカード カスタマーセンターです。ご利用代金については【1】。カードの紛失・盗難は【2】。海外でのご利用については【3】。その他のお問い合わせは【9】を、押してください。',
+        routes: { '1': 'loop:daikin', '2': 'loop:tounan', '3': 'abroad', '9': 'loop:sonota' },
+      },
+      abroad: {
+        text: '海外でのご利用ですね。海外旅行保険については【1】を。海外でカードが使えない場合は【2】を、押してください。',
+        routes: { '1': 'loop:hoken', '2': 'card' },
+      },
+      card: { type: 'input', text: 'カード番号の、下4桁を入力し、最後に【＃】を押してください。', answer: '3344', next: 'birth' },
+      birth: { type: 'input', text: 'ご登録の生年月日を、月と日の4桁で入力し、最後に【＃】を押してください。', answer: '0612', next: 'wait' },
+      wait: {
+        text: '担当者にお繋ぎします。なお、Webなら、ご利用制限の解除を今すぐ行えます。Webをご希望の場合は【1】を。担当者をご希望の場合は【0】を、押してください。',
+        routes: { '1': 'web', '0': 'hold>sasaki' },
+      },
+      sasaki: {
+        type: 'human', who: { name: '佐々木', icon: '🧑‍💼' },
+        lines: [
+          'お電話ありがとうございます。総合窓口の佐々木です。',
+          '海外でカードがご利用いただけない件ですね。……大変申し訳ございません。そちらは、海外デスクの担当となります。',
+          '海外デスクへお回しいたしますので、そのままお待ちください。',
+        ],
+        next: 'hold>desk_top',
+      },
+      desk_top: {
+        company: 'ミライカード 海外デスク',
+        text: 'ミライカード 海外デスクです。この通話は録音させていただきます。お手数ですが、改めてご用件をお選びください。海外旅行保険については【1】。海外でのご利用制限については【2】。外貨両替については【3】を、押してください。',
+        routes: { '1': 'loop:hoken', '2': 'desk_card', '3': 'loop:ryougae' },
+      },
+      desk_card: { type: 'input', text: '改めて、ご本人確認を行います。カード番号の、下4桁を入力し、最後に【＃】を押してください。', answer: '3344', next: 'desk_country' },
+      desk_country: {
+        text: 'ご滞在中の地域をお選びください。アジアは【1】。ヨーロッパは【2】。北米は【3】。その他の地域は【4】を、押してください。',
+        routes: { '1': 'loop:tantougai', '2': 'loop:tantougai', '3': 'hold', '4': 'loop:tantougai' },
+      },
+    },
+    loops: {
+      daikin: ['ご利用代金のご案内です。今月のご請求金額は、Webの会員ページでご確認いただけます。'],
+      tounan: ['カードの紛失・盗難ですね。カードの利用停止は、Webサイトから24時間承っております。'],
+      sonota: ['その他のお問い合わせは、Webのお問い合わせフォームから承っております。'],
+      hoken: ['海外旅行保険のご案内です。補償内容は、カードの種類によって異なります。詳しくは、会員ページをご覧ください。'],
+      ryougae: ['外貨両替のご案内です。両替レートは、毎日午前10時に更新されます。'],
+      tantougai: ['ご滞在の地域は、こちらの窓口の担当外です。お手数ですが、地域担当デスクへおかけ直しください。'],
+    },
+    randomLoops: ['daikin', 'sonota'],
+    loopAch: {},
+  },
+  {
+    id: 11,
+    title: '色違いが届いた',
+    desc: '注文と違う商品を交換させろ',
+    company: 'ミライ通販 お客様センター',
+    lead: '注文と違う色の服が届いた！',
+    goal: ['<em>人間に</em>正しい商品と', '交換してもらえ！'],
+    bar: '正しい商品と<b>人間に</b>交換してもらえ',
+    memo: [['注文番号', '202611'], ['電話番号の下4桁', '7788'], ['状況', '色違いが届いた'], ['希望', '交換']],
+    trap: 'マイページ',
+    webLine: 'ご入力ありがとうございます。マイページのURLをSMSでお送りしました。マイページからお申し込みください。',
+    operator: '森', operatorIcon: '🧑‍💼',
+    humanLine: 'お待たせいたしました。返品交換センターの森です。正しい色の商品、すぐにお送りしますね。',
+    clearMsg: '森さんが、正しい色の服を手配してくれた。<br>3人目にして、ようやく。',
+    hold: { ms: 8000, webOffer: true },
+    start: 'top',
+    path: [['top', '3'], ['henpin', '2'], ['order', '202611#'], ['tel', '7788#'], ['kind', '2'], ['wait', '0'], ['b_top', '202611#'], ['b_kind', '2'], ['k_top', '7788#'], ['k_menu', '1']],
+    nodes: {
+      top: {
+        text: 'お電話ありがとうございます。ミライ通販 お客様センターです。ご注文については【1】。配送状況については【2】。返品・交換については【3】。その他のお問い合わせは【0】を、押してください。',
+        routes: { '1': 'loop:chumon', '2': 'loop:haisou', '3': 'henpin', '0': 'loop:sonota' },
+      },
+      henpin: {
+        text: '返品・交換ですね。お客様のご都合による返品は【1】を。届いた商品の不良・間違いは【2】を、押してください。',
+        routes: { '1': 'loop:jiko', '2': 'order' },
+      },
+      order: { type: 'input', text: 'ご注文番号6桁を入力し、最後に【＃】を押してください。', answer: '202611', next: 'tel' },
+      tel: { type: 'input', text: 'ご登録の電話番号の、下4桁を入力し、最後に【＃】を押してください。', answer: '7788', next: 'kind' },
+      kind: {
+        text: 'どのような間違いですか。商品そのものが違う場合は【1】。色やサイズが違う場合は【2】。数量が違う場合は【3】を、押してください。',
+        routes: { '1': 'loop:sonota', '2': 'wait', '3': 'loop:sonota' },
+      },
+      wait: {
+        text: '担当者にお繋ぎします。返品・交換は、マイページからもお申し込みいただけます。マイページをご利用の場合は【1】を。担当者をご希望の場合は【0】を、押してください。',
+        routes: { '1': 'web', '0': 'hold>kimura' },
+      },
+      kimura: {
+        type: 'human', who: { name: '木村', icon: '👩‍💼' },
+        lines: [
+          'お電話ありがとうございます。お客様センターの木村です。',
+          '色違いの商品が届いた件ですね。……申し訳ございません、出荷に関することは、物流センターでの対応となります。',
+          '物流センターへお回しいたします。',
+        ],
+        next: 'hold>b_top',
+      },
+      b_top: { type: 'input', company: 'ミライ通販 物流センター', text: 'ミライ通販 物流センターです。お手数ですが、ご注文番号6桁を入力し、最後に【＃】を押してください。', answer: '202611', next: 'b_kind' },
+      b_kind: {
+        text: 'ご用件をお選びください。配送日時の変更は【1】を。誤配送・誤出荷については【2】を、押してください。',
+        routes: { '1': 'loop:nichiji', '2': 'hold>hayashi' },
+      },
+      hayashi: {
+        type: 'human', who: { name: '林', icon: '👨‍🔧' },
+        lines: [
+          '物流センターの林です。誤出荷の件ですね。',
+          '……あ、交換をご希望ですか？交換のお手続きは、返品交換センターの担当なんです。',
+          '大変申し訳ございません。返品交換センターへお回しいたします。',
+        ],
+        next: 'hold>k_top',
+      },
+      k_top: { type: 'input', company: 'ミライ通販 返品交換センター', text: 'ミライ通販 返品交換センターです。ご本人確認のため、ご登録の電話番号の、下4桁を入力し、最後に【＃】を押してください。', answer: '7788', next: 'k_menu' },
+      k_menu: {
+        text: '交換をご希望の場合は【1】を。返金をご希望の場合は【2】を、押してください。',
+        routes: { '1': 'hold', '2': 'loop:henkin' },
+      },
+    },
+    loops: {
+      chumon: ['ご注文は、ミライ通販のWebサイト・アプリから24時間承っております。'],
+      haisou: ['配送状況は、Webサイトのマイページからご確認いただけます。'],
+      sonota: ['その他のお問い合わせは、マイページのお問い合わせフォームをご利用ください。'],
+      jiko: ['お客様都合の返品は、商品到着後8日以内に、マイページからお申し込みください。返送料は、お客様のご負担となります。'],
+      nichiji: ['配送日時の変更は、マイページから承っております。'],
+      henkin: ['返金のご案内です。返金は、商品の到着を確認したのち、2週間ほどで行います。'],
+    },
+    randomLoops: ['chumon', 'haisou'],
+    loopAch: {},
+  },
+  {
+    id: 12,
+    title: '解約させてくれ',
+    desc: '海外移住のためスマホを解約しろ',
+    company: 'ミライモバイル サポート',
+    lead: '海外移住が決まった。スマホを解約したい',
+    goal: ['<em>人間に</em>スマホを', '解約させろ！'],
+    bar: 'スマホを<b>人間に</b>解約させろ',
+    memo: [['電話番号の下4桁', '9051'], ['生年月日', '1988年8月23日'], ['解約の理由', '海外へ引っ越し']],
+    trap: 'Web',
+    webLine: 'ご入力ありがとうございます。WebサイトのURLをSMSでお送りしました。Webをご利用ください。',
+    operator: '松本', operatorIcon: '👩‍💼',
+    humanLine: 'お待たせいたしました。解約専門窓口の松本です。ご解約、確かに承りました。長い間、ありがとうございました。',
+    clearMsg: 'ついに解約できた。<br>電話を切ったら、窓の外が少し明るく見えた。',
+    hold: { ms: 9000, webOffer: false },
+    start: 'top',
+    path: [['top', '9'], ['reason', '3'], ['kaigai', '2'], ['tel', '9051#'], ['birth', '19880823#'], ['wait', '0'], ['k_top', '9051#'], ['k_birth', '19880823#'], ['k_reason', '3'], ['k_last', '1']],
+    nodes: {
+      top: {
+        text: 'お電話ありがとうございます。ミライモバイル サポートセンターです。料金・プランについては【1】。機種変更については【2】。故障・修理については【3】。ご解約については【9】を、押してください。',
+        routes: { '1': 'loop:plan', '2': 'loop:kishu', '3': 'loop:kosho', '9': 'reason' },
+      },
+      reason: {
+        text: 'ご解約ですね。……差し支えなければ、解約の理由をお選びください。料金が高いは【1】。他社への乗り換えは【2】。海外へのお引っ越しは【3】。その他は【4】を、押してください。',
+        routes: { '1': 'loop:waribiki', '2': 'loop:mnp', '3': 'kaigai', '4': 'loop:sonota' },
+      },
+      kaigai: {
+        text: '海外へのお引っ越しですね。海外でもそのまま使える、国際ローミングプランもございます！プランの詳細を聞く場合は【1】を。それでも解約する場合は【2】を、押してください。',
+        routes: { '1': 'loop:roaming', '2': 'tel' },
+      },
+      tel: { type: 'input', text: 'ご契約の電話番号の、下4桁を入力し、最後に【＃】を押してください。', answer: '9051', next: 'birth' },
+      birth: { type: 'input', text: 'ご契約者様の生年月日を、西暦から8桁で入力し、最後に【＃】を押してください。', answer: '19880823', next: 'wait' },
+      wait: {
+        text: '担当者にお繋ぎします。なお、ご解約はWebからも……失礼いたしました。ご解約は、Webではお手続きいただけません。担当者をお待ちになる場合は【0】を、押してください。',
+        routes: { '0': 'hold>ishii' },
+      },
+      ishii: {
+        type: 'human', who: { name: '石井', icon: '🧑‍💼' },
+        lines: [
+          'お電話ありがとうございます。ミライモバイルの石井です。',
+          'ご解約ですね。……その前に！今なら、月額料金が半年間無料になるキャンペーンが……',
+          '……失礼いたしました。ご解約のお手続きは、解約専門窓口での対応となります。お回しいたします。',
+        ],
+        next: 'hold>k_top',
+      },
+      k_top: { type: 'input', company: 'ミライモバイル 解約専門窓口', text: 'ミライモバイル 解約専門窓口です。お手数ですが、もう一度、ご契約の電話番号の、下4桁を入力し、最後に【＃】を押してください。', answer: '9051', next: 'k_birth' },
+      k_birth: { type: 'input', text: 'ご契約者様の生年月日を、西暦から8桁で入力し、最後に【＃】を押してください。', answer: '19880823', next: 'k_reason' },
+      k_reason: {
+        text: '改めて、解約の理由をお選びください。料金が高いは【1】。他社への乗り換えは【2】。海外へのお引っ越しは【3】。その他は【4】を、押してください。',
+        routes: { '1': 'loop:waribiki', '2': 'loop:mnp', '3': 'k_last', '4': 'loop:sonota' },
+      },
+      k_last: {
+        text: '最後の確認です。解約すると、これまで貯めたポイントが、すべて失効します。本当に解約する場合は【1】を。考え直す場合は【2】を、押してください。',
+        routes: { '1': 'hold', '2': 'loop:keizoku' },
+      },
+    },
+    loops: {
+      plan: ['料金プランのご案内です。ただいま、ギガ使い放題プランが大変お得になっております。'],
+      kishu: ['機種変更は、オンラインショップなら事務手数料無料！'],
+      kosho: ['故障・修理のご相談は、まず端末の再起動をお試しください。'],
+      waribiki: ['料金が高いと感じていらっしゃるのですね！今なら、お客様だけの特別割引で、月額料金が半額に！ぜひ、ご検討ください。', '……ご検討いただけましたでしょうか。'],
+      mnp: ['他社への乗り換えをご検討中ですね。乗り換えの前に、ミライモバイルの新プランを、ぜひ一度お試しください！'],
+      sonota: ['解約の理由を、詳しくお聞かせください。……音声を認識できませんでした。'],
+      roaming: ['国際ローミングプランのご案内です。1日980円で、世界200以上の国と地域で、データ通信が使い放題！解約する前に、ぜひご検討ください。'],
+      keizoku: ['ありがとうございます！これからも、ミライモバイルをよろしくお願いいたします！', '引き続き、ミライモバイルをご利用いただき、ありがとうございます！'],
+    },
+    randomLoops: ['plan', 'kishu', 'kosho'],
+    loopAch: { waribiki: 'hikitome', roaming: 'hikitome', keizoku: 'hikitome' },
+  },
+];
+
+const TIERS = [
+  { name: '初級', ach: 'tier_beg' },
+  { name: '中級', ach: 'tier_mid' },
+  { name: '上級', ach: 'tier_adv' },
+  { name: '鬼', ach: 'tier_oni' },
+];
+const tierOf = (st) => Math.min(TIERS.length - 1, Math.floor((st.id - 1) / 3));
+
+/* ================= 実績 ================= */
+const ACH = [
+  { id: 'first_call', icon: '📞', title: 'はじめての発信', desc: '初めて電話をかけた' },
+  { id: 'clear_1', icon: '💳', title: 'カード、止まりました', desc: 'STAGE 1 をクリア' },
+  { id: 'clear_2', icon: '📱', title: '修理受付完了', desc: 'STAGE 2 をクリア' },
+  { id: 'clear_3', icon: '📦', title: '荷物の行方', desc: 'STAGE 3 をクリア' },
+  { id: 'tier_beg', icon: '🔰', title: '初級制覇', desc: '初級（01〜03）をすべてクリア' },
+  { id: 'tier_mid', icon: '📗', title: '中級制覇', desc: '中級（04〜06）をすべてクリア' },
+  { id: 'tier_adv', icon: '📕', title: '上級制覇', desc: '上級（07〜09）をすべてクリア' },
+  { id: 'tier_oni', icon: '👹', title: '鬼退治', desc: '鬼（10〜12）をすべてクリア' },
+  { id: 'all_clear', icon: '👑', title: '人間コンプリート', desc: '全ステージをクリア' },
+  { id: 'rank_s', icon: '🌟', title: 'Sランク', desc: 'いずれかのステージでSランクを獲得' },
+  { id: 'all_s', icon: '💎', title: 'オールS', desc: '全ステージでSランクを獲得' },
+  { id: 'perfect', icon: '🎯', title: '迷いなき指', desc: 'やり直し・怒られ・たらい回しなしでクリア' },
+  { id: 'speed', icon: '⚡', title: '秒で繋がる', desc: '45秒以内にクリア' },
+  { id: 'flying', icon: '😤', title: 'せっかち', desc: 'ガイダンス中に押して怒られる' },
+  { id: 'flying3', icon: '🙉', title: '学ばない人', desc: '1回のプレイで3回怒られる' },
+  { id: 'wrong_input', icon: '🔢', title: 'うろ覚え', desc: '確認番号の入力を間違える' },
+  { id: 'loop', icon: '🔄', title: 'たらい回しデビュー', desc: '関係ない窓口に回される' },
+  { id: 'loop3', icon: '🌀', title: 'ループの住人', desc: 'たらい回しの案内を3周聞く' },
+  { id: 'transfer', icon: '🔁', title: '担当が違います', desc: 'やっと繋がった担当者に、部署違いで転送される' },
+  { id: 'web', icon: '🌐', title: 'Webの誘惑', desc: 'Web・アプリ・LINEなどに誘導されて切断される' },
+  { id: 'hold_web', icon: '🪤', title: '保留中の裏切り', desc: '保留中の誘導に乗ってしまう' },
+  { id: 'hold_hang', icon: '✂️', title: 'ガチャ切り', desc: '保留中に電話を切る' },
+  { id: 'comeback', icon: '🔥', title: '不屈の精神', desc: '3回以上やり直してクリア' },
+  { id: 'ai_chat', icon: '🤖', title: 'ミライくんと話す', desc: 'AIアシスタントに相談してみる' },
+  { id: 'hikitome', icon: '🙅', title: '引き止め', desc: '解約しようとして全力で引き止められる' },
+  { id: 'regular', icon: '🏠', title: '常連さん', desc: '累計10回電話をかける' },
+  { id: 'hold_warp', icon: '🛸', title: '迷子の電話', desc: '保留中にボタンを押して、変なところに飛ばされる' },
+];
+
+/* 保留中にボタンを押すと飛ばされる先（全ステージ共通） */
+const WARPS = {
+  jiho: ['午後3時、42分、20秒をお知らせします。ピッ、ピッ、ピッ、ポーン。', '午後3時、42分、30秒をお知らせします。ピッ、ピッ、ピッ、ポーン。'],
+  tenki: ['ミライ市の明日の天気をお伝えします。晴れ、ときどきくもり。ところにより、保留音でしょう。'],
+  uranai: ['ミライ占いダイヤルへようこそ！今日のあなたのラッキーナンバーは【0】。ラッキーアイテムは、受話器です。', '今日は、待つことで運気が上がる一日。焦ってボタンを押さないようにしましょう。'],
+  global: ['Thank you for calling Mirai Global Support. All of our operators are currently on vacation. Please call again next month.'],
+  fax: ['ピーーーーー……ガガッ……ピーーーー……（FAX受信モードです）'],
+};
+const WARP_KEYS = Object.keys(WARPS);
+
+/* ================= セーブ ================= */
+const SAVE_KEY = 'opgame-save-v1';
+function loadSave() {
+  try {
+    const d = JSON.parse(localStorage.getItem(SAVE_KEY));
+    if (d && typeof d === 'object') return { best: d.best || {}, ach: d.ach || {}, calls: d.calls || 0 };
+  } catch (e) {}
+  return { best: {}, ach: {}, calls: 0 };
+}
+const SAVE = loadSave();
+function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(SAVE)); } catch (e) {} }
+
+/* ================= DOM ================= */
+const el = {
+  app: $('#app'), sub: $('#subtitle'), speaker: $('#speaker'), avatar: $('#avatar'),
+  timer: $('#timer'), status: $('#status'), input: $('#inputDisp'), pad: $('#pad'),
+  hang: $('#hangBtn'), retry: $('#retryBtn'), toast: $('#toast'), achToast: $('#achToast'), hold: $('#holdPanel'),
+  hint: $('#hint'), mute: $('#muteBtn'), memo: $('#memo'), company: $('#company'),
+  homeOv: $('#homeOv'), achOv: $('#achOv'), overOv: $('#overOv'), clearOv: $('#clearOv'), missionOv: $('#missionOv'),
+};
+
+const KEYS = [['1',''],['2','ABC'],['3','DEF'],['4','GHI'],['5','JKL'],['6','MNO'],['7','PQRS'],['8','TUV'],['9','WXYZ'],['*',''],['0','+'],['#','']];
+const keyEls = {};
+for (const [d, l] of KEYS) {
+  const b = document.createElement('button');
+  b.className = 'k'; b.dataset.k = d; b.setAttribute('aria-label', d);
+  b.innerHTML = `<span class="d">${d === '*' ? '＊' : d === '#' ? '＃' : d}</span><span class="l">${l}</span>`;
+  el.pad.appendChild(b);
+  keyEls[d] = b;
+}
+
+/* ================= 状態 ================= */
+let stageIdx = 0;
+let ST = STAGES[0];
+const S = {
+  mode: 'title',      // title | busy | menu | loop | hold | end
+  speaking: false,
+  node: null,
+  loopName: null,
+  buf: '',            // 番号入力中の値
+  gen: 0,
+  startAt: 0, endAt: 0, running: false,
+  redials: 0, scolds: 0, loops: 0,
+  holdWebOffer: false,
+  shareText: '',
+};
+
+/* ================= ユーティリティ ================= */
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// ゲーム内の出来事をアクセス解析に記録する（失敗しても遊びには影響させない）
+const track = (name, p) => { try { if (window.gtag) gtag('event', name, p || {}); } catch (e) {} };
+async function wait(ms, g) { await sleep(ms); return g === S.gen; }
+
+function fmt(ms) {
+  const s = Math.floor(ms / 1000);
+  return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+}
+function elapsed() { return (S.running ? performance.now() : S.endAt) - S.startAt; }
+function tick() {
+  if (S.running) el.timer.textContent = fmt(elapsed());
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+let toastTimer = 0;
+function toast(msg) {
+  el.toast.textContent = msg;
+  el.toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.toast.classList.remove('show'), 1400);
+}
+function vibrate(p) { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} }
+
+function setSpeaker(kind, who) {
+  const person = who || { name: ST.operator, icon: ST.operatorIcon };
+  const map = { ai: 'AI自動音声ガイダンス', human: '担当者：' + person.name, sys: 'SYSTEM' };
+  el.speaker.textContent = map[kind];
+  el.speaker.className = 'speaker' + (kind === 'ai' ? '' : ' ' + kind);
+  el.sub.className = 'subtitle' + (kind === 'ai' ? '' : ' ' + kind);
+  el.avatar.textContent = kind === 'human' ? person.icon : '🤖';
+  el.avatar.classList.toggle('human', kind === 'human');
+}
+function setStatus(text, cls) {
+  el.status.textContent = text;
+  el.status.className = 'status' + (cls ? ' ' + cls : '');
+}
+function setInput(s) { el.input.textContent = s; }
+function setCallBtns(on) { el.hang.disabled = !on; el.retry.disabled = !on; }
+
+function escapeHtml(s) { return s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+/* 文字送りの所要時間（say と同じ規則） */
+function charMs(c) { return c === '。' ? CHAR_MS * 7 : (c === '、' || c === '…') ? CHAR_MS * 3 : CHAR_MS; }
+function textMs(text) {
+  let ms = 0;
+  const rest = text.replace(/【.+?】/g, () => { ms += CHAR_MS * 4; return ''; });
+  for (const c of rest) ms += charMs(c);
+  return ms;
+}
+
+/* 1文字ずつ表示。【x】は強調表示。途中でgenが変わったらfalse */
+let sayId = 0;
+async function say(text, g, kind = 'ai', who) {
+  if (g !== S.gen) return false;
+  const my = ++sayId;
+  const alive = () => g === S.gen && my === sayId;
+  setSpeaker(kind, who);
+  el.sub.innerHTML = '';
+  const textNode = document.createElement('span');
+  const caret = document.createElement('span');
+  caret.className = 'caret';
+  el.sub.append(textNode, caret);
+  el.avatar.classList.add('talking');
+  let html = '';
+  let i = 0;
+  while (i < text.length) {
+    if (!alive()) return false;
+    let chunk, ms;
+    const m = text.slice(i).match(/^【(.+?)】/);
+    if (m) {
+      chunk = `<span class="key">【${escapeHtml(m[1])}】</span>`;
+      i += m[0].length;
+      ms = CHAR_MS * 4;
+    } else {
+      const c = text[i++];
+      chunk = escapeHtml(c);
+      ms = charMs(c);
+    }
+    html += chunk;
+    textNode.innerHTML = html;
+    el.sub.scrollTop = el.sub.scrollHeight;
+    await sleep(T(ms));
+  }
+  if (!alive()) return false;
+  el.avatar.classList.remove('talking');
+  return true;
+}
+
+/* ================= サウンド ================= */
+let ac = null, master = null, muted = false;
+try { muted = localStorage.getItem('opgame-muted') === '1'; } catch (e) {}
+el.mute.textContent = muted ? '🔇' : '🔊';
+function audio() {
+  if (!ac) {
+    try {
+      ac = new (window.AudioContext || window.webkitAudioContext)();
+      master = ac.createGain();
+      master.gain.value = muted ? 0 : 0.5;
+      master.connect(ac.destination);
+    } catch (e) { ac = null; }
+  }
+  if (ac && ac.state === 'suspended') ac.resume();
+  return ac;
+}
+function tone(freqs, dur, vol = 0.18, type = 'sine', at = 0) {
+  const a = audio(); if (!a) return;
+  const t0 = a.currentTime + at;
+  const g = a.createGain();
+  g.gain.setValueAtTime(0, t0);
+  g.gain.linearRampToValueAtTime(vol, t0 + 0.01);
+  g.gain.setValueAtTime(vol, t0 + Math.max(0.02, dur - 0.03));
+  g.gain.linearRampToValueAtTime(0, t0 + dur);
+  g.connect(master);
+  for (const f of freqs) {
+    const o = a.createOscillator();
+    o.type = type; o.frequency.value = f;
+    o.connect(g); o.start(t0); o.stop(t0 + dur + 0.02);
+  }
+}
+const DTMF = { '1':[697,1209],'2':[697,1336],'3':[697,1477],'4':[770,1209],'5':[770,1336],'6':[770,1477],'7':[852,1209],'8':[852,1336],'9':[852,1477],'*':[941,1209],'0':[941,1336],'#':[941,1477] };
+const ringback = (at) => tone([400, 416], 1, 0.12, 'sine', at);     // 日本の呼出音（16Hz変調）
+const busyTone = (at) => tone([400], 0.5, 0.15, 'sine', at);        // 話中音
+const errBeep = () => { tone([880], 0.12, 0.15, 'square'); tone([660], 0.2, 0.15, 'square', 0.14); };
+
+let holdTimer = 0;
+const HOLD_MELODY = [0, 4, 7, 12, 11, 7, 4, 7, 5, 9, 12, 9, 7, 4, 2, -1, 0, 4, 7, 12, 14, 12, 11, 9, 7, 5, 4, 2, 0, null, null, null];
+function startHoldMusic() {
+  stopHoldMusic();
+  const step = 0.28;
+  const playBar = () => {
+    HOLD_MELODY.forEach((n, i) => {
+      if (n === null) return;
+      const f = 523.25 * Math.pow(2, n / 12);
+      tone([f], step * 0.9, 0.07, 'triangle', i * step);
+      tone([f * 2], step * 0.5, 0.025, 'sine', i * step);
+    });
+  };
+  playBar();
+  holdTimer = setInterval(playBar, HOLD_MELODY.length * 280);
+}
+function stopHoldMusic() { clearInterval(holdTimer); holdTimer = 0; }
+
+el.mute.addEventListener('click', () => {
+  muted = !muted;
+  el.mute.textContent = muted ? '🔇' : '🔊';
+  try { localStorage.setItem('opgame-muted', muted ? '1' : '0'); } catch (e) {}
+  if (master) master.gain.value = muted ? 0 : 0.5;
+});
+
+/* ================= 実績処理 ================= */
+const achQueue = [];
+let achBusy = false;
+function unlock(id) {
+  const a = ACH.find((x) => x.id === id);
+  if (!a || SAVE.ach[id]) return;
+  SAVE.ach[id] = Date.now();
+  persist();
+  achQueue.push(a);
+  if (!achBusy) nextAchToast();
+}
+async function nextAchToast() {
+  const a = achQueue.shift();
+  if (!a) { achBusy = false; return; }
+  achBusy = true;
+  el.achToast.innerHTML = `<span class="ic">${a.icon}</span><span><small>実績解除！</small><b>${escapeHtml(a.title)}</b></span>`;
+  el.achToast.classList.add('show');
+  tone([1318], 0.1, 0.1); tone([1760], 0.18, 0.1, 'sine', 0.1);
+  await sleep(2200);
+  el.achToast.classList.remove('show');
+  await sleep(380);
+  nextAchToast();
+}
+function achCountText() { return `${ACH.filter((a) => SAVE.ach[a.id]).length} / ${ACH.length}`; }
+
+/* ================= 最短時間とランク ================= */
+const HOLD_LINE = 'ただいま電話が大変混み合っております。オペレーターにお繋ぎするまで、このままお待ちください。';
+const HOLD_INTRO_AI = 'オペレーターにお繋ぎします。';
+const HOLD_INTRO_TRANSFER = '担当部署へ、転送しております。';
+const holdIntroFor = (node) => node && node.type === 'human' ? HOLD_INTRO_TRANSFER : HOLD_INTRO_AI;
+const parseHold = (target) => /^hold(?:>(\w+))?$/.exec(target || '');
+
+/* 正解ルートを最速で進んだときの所要時間（演出の待ち時間を合計） */
+function minClearMs(st) {
+  let ms = 2600;
+  const follow = (target, from) => {
+    const h = parseHold(target);
+    if (!h) return;
+    ms += textMs(holdIntroFor(from)) + 500 + textMs(HOLD_LINE) + st.hold.ms + 700;
+    if (!h[1]) return;
+    const n = st.nodes[h[1]];
+    if (n.type === 'human') {
+      ms += 500;
+      for (const line of n.lines) ms += textMs(line) + 600;
+      follow(n.next, n);
+    }
+  };
+  for (const [id, keys] of st.path) {
+    const n = st.nodes[id];
+    ms += 500 + textMs(n.text);
+    follow(n.type === 'input' ? n.next : n.routes[keys], n);
+  }
+  return ms;
+}
+const RANKS = 'SABC';
+function rankFor(st, ms, perfect) {
+  // 操作の手数が多いステージほど猶予を広げる
+  const steps = st.path.reduce((a, [, keys]) => a + 1 + (keys.length - 1) / 4, 0);
+  const over = (ms - minClearMs(st)) / 1000;
+  if (over <= 8 + 3 * steps && perfect) return 'S';
+  if (over <= 30 + 8 * steps) return 'A';
+  if (over <= 90 + 15 * steps) return 'B';
+  return 'C';
+}
+
+/* ================= 画面描画 ================= */
+function renderHome() {
+  const list = $('#stageList');
+  list.innerHTML = '';
+  STAGES.forEach((st, i) => {
+    const t = tierOf(st);
+    if (i === 0 || tierOf(STAGES[i - 1]) !== t) {
+      const h = document.createElement('div');
+      h.className = 'tier-head t' + t;
+      h.textContent = TIERS[t].name;
+      list.appendChild(h);
+    }
+    const best = SAVE.best[st.id];
+    const b = document.createElement('button');
+    b.className = 'stage-card' + (best ? ' done' : '') + (t === 3 ? ' oni' : '');
+    b.dataset.stage = i;
+    b.innerHTML =
+      `<div class="sc-num t${t}">${String(st.id).padStart(2, '0')}</div>` +
+      `<div class="sc-body"><div class="sc-title">${st.title}</div><div class="sc-desc">${st.desc}</div><span class="sc-tier t${t}">${TIERS[t].name}</span></div>` +
+      `<div class="sc-best">${best ? `<div class="sc-rank">${best.rank}</div><div class="sc-time">${fmt(best.ms)}</div>` : '<span class="sc-new">NEW</span>'}</div>`;
+    b.addEventListener('click', () => begin(i));
+    list.appendChild(b);
+  });
+  $('#achCount').textContent = achCountText();
+}
+
+function renderAch() {
+  const got = ACH.filter((a) => SAVE.ach[a.id]).length;
+  $('#achCount2').textContent = achCountText();
+  $('#achBar').style.width = (got / ACH.length * 100) + '%';
+  $('#achList').innerHTML = ACH.map((a) => {
+    const on = !!SAVE.ach[a.id];
+    return `<div class="ach-item ${on ? 'got' : 'locked'}"><div class="ic">${a.icon}</div><div><div class="t">${on ? '' : '🔒 '}${a.title}</div><div class="d">${a.desc}</div></div></div>`;
+  }).join('');
+}
+
+function applyStage() {
+  const t = tierOf(ST);
+  const chip = $('#stageChip');
+  chip.textContent = 'STAGE ' + ST.id;
+  chip.className = 'chip t' + t;
+  $('#missionBar').innerHTML = 'MISSION：' + ST.bar;
+  el.company.textContent = ST.company;
+  $('#mStage').textContent = `STAGE ${ST.id} ／ ${TIERS[t].name}`;
+  $('#mLead').textContent = ST.lead;
+  $('#mGoal').innerHTML = ST.goal.map((l) => `<span>${l}</span>`).join('');
+  const memo = ST.memo || [];
+  $('#mMemo').innerHTML = memo.map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join('');
+  el.memo.innerHTML = memo.map(([k, v]) => `<span>${k}<b>${v}</b></span>`).join('');
+  el.memo.hidden = memo.length === 0;
+}
+
+function resetCallUI() {
+  stopHoldMusic();
+  setCallBtns(false);
+  el.hold.hidden = true; el.hint.hidden = true;
+  setSpeaker('ai');
+  el.avatar.classList.remove('talking');
+  el.sub.textContent = '';
+  setInput('');
+  setStatus('待機中');
+  el.timer.textContent = '00:00';
+}
+
+function showHome() {
+  ++S.gen;
+  S.mode = 'title'; S.running = false;
+  resetCallUI();
+  el.overOv.hidden = true; el.clearOv.hidden = true; el.achOv.hidden = true; el.missionOv.hidden = true;
+  renderHome();
+  el.homeOv.hidden = false;
+  el.homeOv.scrollTop = 0;
+}
+
+/* ================= シーン ================= */
+function resetRun(isRetry) {
+  S.redials = isRetry ? S.redials + 1 : 0;
+  S.scolds = 0; S.loops = 0;
+  S.startAt = performance.now(); S.running = true;
+  el.timer.textContent = '00:00';
+}
+
+async function startCall(redial) {
+  const g = ++S.gen;
+  S.mode = 'busy'; S.speaking = false;
+  el.hint.hidden = true; el.hold.hidden = true;
+  setCallBtns(true);
+  setInput('');
+  setSpeaker('ai');
+  el.company.textContent = ST.company;
+  el.sub.textContent = redial ? 'かけ直しています…' : '発信中…';
+  setStatus('呼び出し中…');
+  SAVE.calls++; persist();
+  unlock('first_call');
+  if (SAVE.calls >= 10) unlock('regular');
+  ringback(0); ringback(T(3000) / 1000);
+  if (!await wait(T(2600), g)) return;
+  setStatus('通話中', 'live');
+  goNode(ST.start);
+}
+
+/* 遷移先の文字列を解釈して進む */
+function goTarget(target, from) {
+  if (target === 'web') { webTrap(false); return; }
+  const h = parseHold(target);
+  if (h) { hold(h[1], holdIntroFor(from)); return; }
+  if (target.startsWith('loop:')) { S.loops++; runLoop(target.slice(5)); return; }
+  goNode(target);
+}
+
+async function goNode(id) {
+  const g = ++S.gen;
+  const n = ST.nodes[id];
+  S.node = id; S.mode = 'menu'; S.speaking = true; S.buf = '';
+  el.hint.hidden = true;
+  if (n.company) el.company.textContent = n.company;
+  setStatus(n.type === 'human' ? '通話中（担当者）' : '通話中', 'live');
+  if (!await wait(T(500), g)) return;
+
+  if (n.type === 'human') {
+    // 担当者が喋り終えたら自動で次へ（多くは「担当が違います」→転送）
+    for (const line of n.lines) {
+      if (!await say(line, g, 'human', n.who)) return;
+      if (!await wait(T(600), g)) return;
+    }
+    if (parseHold(n.next)) unlock('transfer');
+    S.speaking = false;
+    goTarget(n.next, n);
+    return;
+  }
+
+  if (!await say(n.text, g)) return;
+  // 読み終えたら字幕を残したまま入力待ち（自動で繰り返さない）
+  S.speaking = false;
+  el.sub.querySelector('.caret')?.remove();
+}
+
+async function runLoop(name, prefix) {
+  const g = ++S.gen;
+  S.mode = 'loop'; S.loopName = name; S.speaking = true;
+  unlock('loop');
+  if (ST.loopAch[name]) unlock(ST.loopAch[name]);
+  if (prefix) {
+    if (!await say(prefix, g)) return;
+    if (!await wait(T(900), g)) return;
+  }
+  const lines = ST.loops[name] || WARPS[name];
+  let cycles = 0;
+  for (;;) {
+    for (const line of lines) {
+      if (!await say(line, g)) return;
+      if (!await wait(T(1400), g)) return;
+    }
+    cycles++;
+    el.hint.hidden = false;
+    if (cycles >= 3) unlock('loop3');
+    if (!await say('このご案内を、もう一度繰り返します。', g)) return;
+    if (!await wait(T(900), g)) return;
+  }
+}
+
+async function flying() {
+  const g = ++S.gen;
+  S.mode = 'busy'; S.speaking = false; S.scolds++;
+  unlock('flying');
+  if (S.scolds >= 3) unlock('flying3');
+  errBeep(); vibrate([60, 40, 60]);
+  el.app.classList.remove('shake'); void el.app.offsetWidth; el.app.classList.add('shake');
+  toast('⚠ フライング！最後まで聞け！');
+  if (!await say('ピッ。……正しい番号を入力してください。', g, 'sys')) return;
+  if (!await wait(T(900), g)) return;
+  if (!await say('最初のメニューに戻ります。', g)) return;
+  if (!await wait(T(900), g)) return;
+  setInput('');
+  el.company.textContent = ST.company;
+  goNode(ST.start);
+}
+
+async function wrongInput() {
+  const g = ++S.gen;
+  S.mode = 'busy'; S.speaking = false; S.scolds++;
+  unlock('wrong_input');
+  errBeep(); vibrate([60, 40, 60]);
+  if (!await say('入力内容に誤りがあります。もう一度、入力してください。', g, 'sys')) return;
+  if (!await wait(T(700), g)) return;
+  setInput('');
+  goNode(S.node);
+}
+
+async function webTrap(fromHold) {
+  const g = ++S.gen;
+  S.mode = 'busy'; S.speaking = true; S.holdWebOffer = false;
+  stopHoldMusic();
+  el.hold.hidden = true; el.hint.hidden = true;
+  setCallBtns(false);
+  if (!await say(ST.webLine, g)) return;
+  if (!await wait(T(600), g)) return;
+  [0, 1, 2, 3].forEach((i) => busyTone(T(i * 1000) / 1000));
+  setStatus('通話終了', 'end');
+  vibrate(200);
+  if (!await say('ツー、ツー、ツー…', g, 'sys')) return;
+  if (!await wait(T(1400), g)) return;
+  unlock('web');
+  if (fromHold) unlock('hold_web');
+  endGame(false, `${ST.trap}に誘導されてしまった…<br>ガイダンスは一方的に切断された。<br>人間は、${ST.trap}の向こうにはいない。`);
+}
+
+/* 保留。next があれば保留明けにそのノードへ（転送）、なければ最後の担当者に繋がってクリア */
+async function hold(next, intro) {
+  const g = ++S.gen;
+  S.mode = 'busy'; S.speaking = true;
+  setInput('');
+  if (!await say(intro, g)) return;
+  if (!await wait(T(500), g)) return;
+  if (!await say(HOLD_LINE, g)) return;
+
+  S.mode = 'hold'; S.speaking = false;
+  setStatus('保留中', 'live');
+  el.hold.hidden = false;
+  startHoldMusic();
+
+  // 残り時間は見せない。待つしかない
+  const cfg = ST.hold;
+  const dur = T(cfg.ms);
+  const t0 = performance.now();
+  let phase = 0;
+  for (;;) {
+    if (g !== S.gen) return;
+    const t = Math.min(1, (performance.now() - t0) / dur);
+    if (phase === 0 && t > 0.02) { phase = 1; say('♪〜 ♪〜（保留音）　順番にお繋ぎしております。そのまま、お待ちください。', g); }
+    if (cfg.webOffer && phase === 1 && t > 0.42) {
+      phase = 2; S.holdWebOffer = true;
+      say(`【ご案内】${ST.trap}なら待ち時間なし！今すぐ${ST.trap}でのお手続きに切り替える場合は【1】を押してください。`, g);
+    }
+    if (phase === (cfg.webOffer ? 2 : 1) && t > 0.78) {
+      phase = 3; S.holdWebOffer = false;
+      say('♪〜 ♪〜（保留音）　大変お待たせしております。もうしばらくお待ちください…', g);
+    }
+    if (t >= 1) break;
+    await sleep(50);
+  }
+  if (g !== S.gen) return;
+  connect(g, next);
+}
+
+async function connect(g, next) {
+  S.mode = 'busy'; S.holdWebOffer = false;
+  stopHoldMusic();
+  tone([1046], 0.08, 0.12); tone([1318], 0.12, 0.12, 'sine', 0.1);
+  if (!await wait(T(700), g)) return;
+  el.hold.hidden = true;
+  if (next) { goNode(next); return; }
+  setStatus('通話中（担当者）', 'live');
+  S.running = false; S.endAt = performance.now();
+  el.timer.textContent = fmt(elapsed());
+  setCallBtns(false);
+  vibrate([30, 60, 30]);
+  if (!await say(ST.humanLine, g, 'human')) return;
+  if (!await wait(T(1600), g)) return;
+  endGame(true);
+}
+
+function inCall() { return ['busy', 'menu', 'loop', 'hold'].includes(S.mode) && !el.hang.disabled; }
+const hangTone = () => { tone([480], 0.15, 0.12); tone([360], 0.2, 0.12, 'sine', 0.16); vibrate(40); };
+
+/* 「切る」：通話を終えてホームへ */
+function hangUp() {
+  if (!inCall()) return;
+  if (S.mode === 'hold') unlock('hold_hang');
+  hangTone();
+  showHome();
+}
+
+/* 「やり直す」：同じステージを最初から（タイマーもリセット、やり直し回数は加算） */
+async function restart() {
+  if (!inCall()) return;
+  if (S.mode === 'hold') unlock('hold_hang');
+  const g = ++S.gen;
+  S.mode = 'busy'; S.speaking = false; S.holdWebOffer = false;
+  stopHoldMusic();
+  el.hold.hidden = true; el.hint.hidden = true;
+  setCallBtns(false);
+  setStatus('通話終了', 'end');
+  setSpeaker('sys');
+  el.sub.textContent = '📵 最初からやり直します…';
+  el.avatar.classList.remove('talking');
+  hangTone();
+  if (!await wait(T(900), g)) return;
+  resetRun(true);
+  startCall(true);
+}
+
+function endGame(cleared, reason) {
+  ++S.gen;
+  S.mode = 'end'; S.speaking = false;
+  stopHoldMusic();
+  if (S.running) { S.running = false; S.endAt = performance.now(); }
+  setCallBtns(false);
+  const ms = elapsed();
+  const time = fmt(ms);
+  homeConfirm.hidden = true;
+  track(cleared ? 'stage_clear' : 'game_over', { stage: ST.id, sec: Math.round(ms / 1000) });
+  if (!cleared) {
+    $('#overReason').innerHTML = reason;
+    $('#overTime').textContent = time;
+    $('#overRedial').textContent = S.redials;
+    el.overOv.hidden = false;
+    return;
+  }
+  const perfect = S.redials + S.scolds + S.loops === 0;
+  const rank = rankFor(ST, ms, perfect);
+
+  // 記録更新
+  const prev = SAVE.best[ST.id];
+  const newRec = !prev || ms < prev.ms;
+  SAVE.best[ST.id] = {
+    ms: prev ? Math.min(prev.ms, ms) : ms,
+    rank: prev && RANKS.indexOf(prev.rank) < RANKS.indexOf(rank) ? prev.rank : rank,
+  };
+  persist();
+
+  $('#newRec').hidden = !newRec;
+  $('#clMsg').innerHTML = ST.clearMsg;
+  $('#clTime').textContent = time;
+  $('#clRank').textContent = rank;
+  $('#clRedial').textContent = S.redials;
+  $('#clMiss').textContent = `${S.scolds}／${S.loops}`;
+  $('#clNext').hidden = stageIdx >= STAGES.length - 1;
+  S.shareText =
+    `📞『オペレーターに繋げ！』STAGE${ST.id}【${TIERS[tierOf(ST)].name}】\n「${ST.title}」を ${time} で突破し、人間（${ST.operator}さん）に繋がった！\n` +
+    `ランク${rank}／やり直し${S.redials}回／怒られ${S.scolds}回／たらい回し${S.loops}回\n#オペレーターに繋げ`;
+  el.clearOv.hidden = false;
+  el.clearOv.scrollTop = 0;
+
+  unlock('clear_' + ST.id);
+  TIERS.forEach((tier, t) => {
+    const group = STAGES.filter((s) => tierOf(s) === t);
+    if (group.length && group.every((s) => SAVE.best[s.id])) unlock(tier.ach);
+  });
+  if (STAGES.every((s) => SAVE.best[s.id])) unlock('all_clear');
+  if (rank === 'S') unlock('rank_s');
+  if (STAGES.every((s) => SAVE.best[s.id] && SAVE.best[s.id].rank === 'S')) unlock('all_s');
+  if (perfect) unlock('perfect');
+  if (ms <= 45000) unlock('speed');
+  if (S.redials >= 3) unlock('comeback');
+}
+
+/* ================= 入力 ================= */
+function pressVisual(k) {
+  const b = keyEls[k]; if (!b) return;
+  b.classList.add('on');
+  setTimeout(() => b.classList.remove('on'), 130);
+}
+const keyLabel = (k) => k === '*' ? '＊' : k === '#' ? '＃' : k;
+
+/* 番号入力ノード：数字をためて＃で確定、＊で消去 */
+function inputKey(n, k) {
+  if (k === '#') {
+    if (S.buf === n.answer) { setInput(S.buf + ' ✓'); goTarget(n.next, n); }
+    else wrongInput();
+    return;
+  }
+  if (k === '*') { S.buf = ''; setInput(''); return; }
+  if (S.buf.length < 12) { S.buf += k; setInput(S.buf); }
+}
+
+function onKey(k) {
+  pressVisual(k);
+  if (S.mode === 'title' || S.mode === 'end') return;
+  tone(DTMF[k], 0.14, 0.12);
+  vibrate(12);
+  if (S.mode === 'menu') {
+    const n = ST.nodes[S.node];
+    if (S.speaking) { setInput(keyLabel(k)); flying(); return; }
+    if (n.type === 'input') { inputKey(n, k); return; }
+    setInput(keyLabel(k));
+    const target = n.routes[k];
+    if (!target) {
+      S.loops++;
+      runLoop(ST.randomLoops[Math.floor(Math.random() * ST.randomLoops.length)]);
+    } else goTarget(target, n);
+    return;
+  }
+  if (S.mode === 'loop') {
+    setInput(keyLabel(k));
+    runLoop(S.loopName, 'このメニューでは、その番号はご利用いただけません。');
+    return;
+  }
+  if (S.mode === 'hold') {
+    if (S.holdWebOffer && k === '1') { webTrap(true); return; }
+    // 保留中に押すと、どこか変な窓口へ転送される
+    S.loops++;
+    unlock('hold_warp');
+    const dest = WARP_KEYS[Math.floor(Math.random() * WARP_KEYS.length)];
+    stopHoldMusic();
+    el.hold.hidden = true;
+    setStatus('転送中…', 'end');
+    runLoop(dest, 'ピッ。保留中のボタン操作を受け付けました。ご指定の窓口へ、転送いたします。');
+    setTimeout(() => { if (S.mode === 'loop') setStatus('通話中', 'live'); }, T(2500));
+    return;
+  }
+  // busy: ガイダンス切替中
+  toast('ガイダンス再生中…');
+}
+
+el.pad.addEventListener('pointerdown', (e) => {
+  const b = e.target.closest('.k'); if (!b) return;
+  e.preventDefault();
+  onKey(b.dataset.k);
+});
+el.pad.addEventListener('click', (e) => e.preventDefault());
+document.addEventListener('keydown', (e) => {
+  if (e.repeat) return;
+  if (/^[0-9*#]$/.test(e.key)) onKey(e.key);
+});
+el.hang.addEventListener('click', hangUp);
+el.retry.addEventListener('click', restart);
+
+/* ズーム・スクロール抑止 */
+['gesturestart', 'gesturechange', 'gestureend'].forEach((t) => document.addEventListener(t, (e) => e.preventDefault(), { passive: false }));
+document.addEventListener('dblclick', (e) => e.preventDefault(), { passive: false });
+document.addEventListener('touchmove', (e) => {
+  if (!e.target.closest('.subtitle, .ov')) e.preventDefault();
+}, { passive: false });
+document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+/* dvh非対応ブラウザ用 */
+if (!(window.CSS && CSS.supports && CSS.supports('height', '100dvh'))) {
+  const fit = () => { el.app.style.height = window.innerHeight + 'px'; };
+  window.addEventListener('resize', fit); fit();
+}
+
+/* ================= 画面遷移 ================= */
+/* ステージ開始時に目的を大きく表示。約3秒（メモがあれば長め） or タップで発信へ */
+async function begin(idx) {
+  audio();
+  stageIdx = idx; ST = STAGES[idx];
+  track('stage_start', { stage: ST.id });
+  const g = ++S.gen;
+  S.mode = 'title';
+  resetCallUI();
+  applyStage();
+  el.homeOv.hidden = true; el.achOv.hidden = true; el.overOv.hidden = true; el.clearOv.hidden = true;
+  const ov = el.missionOv;
+  ov.classList.remove('out'); ov.hidden = false;
+  tone([784], 0.12, 0.12); tone([1046], 0.25, 0.12, 'sine', 0.13);
+  await new Promise((r) => {
+    const done = () => { ov.removeEventListener('pointerdown', done); clearTimeout(t); r(); };
+    const t = setTimeout(done, T(ST.memo ? 5000 : 3200));
+    ov.addEventListener('pointerdown', done);
+  });
+  if (g !== S.gen) return;
+  ov.classList.add('out');
+  await sleep(T(400));
+  ov.hidden = true;
+  if (g !== S.gen) return;
+  resetRun();
+  startCall(false);
+}
+
+$('#achBtn').addEventListener('click', () => {
+  renderAch();
+  el.homeOv.hidden = true; el.achOv.hidden = false; el.achOv.scrollTop = 0;
+});
+$('#achBack').addEventListener('click', showHome);
+$('#overRetry').addEventListener('click', () => begin(stageIdx));
+$('#overHome').addEventListener('click', showHome);
+$('#clRetry').addEventListener('click', () => begin(stageIdx));
+$('#clNext').addEventListener('click', () => begin(Math.min(stageIdx + 1, STAGES.length - 1)));
+$('#clHome').addEventListener('click', showHome);
+
+/* ================= RED FREE GAMES 共通（要望フォーム・HOME） ================= */
+// 要望・バグ報告フォーム（共通のGoogleフォーム）。「対象のゲーム」に同じ名前の選択肢を追加すると選択済みで開く
+const GAME_NAME = 'オペレーターに繋げ！';
+const FEEDBACK_VIEW = 'https://docs.google.com/forms/d/e/1FAIpQLSfJ2DevI46AJiB_kUAmPGOvckFRqzzSP_iCVd5qiikxr9SIOg/viewform';
+const feedbackUrl = `${FEEDBACK_VIEW}?usp=pp_url&entry.2056875219=${encodeURIComponent(GAME_NAME)}`;
+['#fbHome', '#fbOver', '#fbClear'].forEach((s) => { $(s).href = feedbackUrl; });
+
+// HOME：通話中は確認を挟んでからホームへ。それ以外はそのまま戻る
+const homeConfirm = $('#homeConfirm');
+$('#homeBtn').addEventListener('click', () => {
+  if (S.mode === 'title' && el.missionOv.hidden) return;
+  if (!inCall()) { showHome(); return; }
+  homeConfirm.hidden = false;
+});
+$('#homeNo').addEventListener('click', () => { homeConfirm.hidden = true; });
+$('#homeYes').addEventListener('click', () => {
+  homeConfirm.hidden = true;
+  track('home_return', { stage: ST.id });
+  if (inCall()) hangUp(); else showHome();
+});
+$('#xBtn').addEventListener('click', () => {
+  const url = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(S.shareText);
+  window.open(url, '_blank', 'noopener');
+});
+
+applyStage();
+renderHome();
+
+// テスト用フック
+window.__game = { S, STAGES, ACH, SAVE, onKey, hangUp, restart, begin, showHome, minClearMs };
+})();
+</script>
+</body>
+</html>
