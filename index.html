@@ -126,7 +126,9 @@ button{font:inherit;color:inherit;touch-action:manipulation;cursor:pointer}
   border:1px solid var(--line);border-radius:16px;
   padding:10px 14px 12px;overflow:hidden;
 }
-.speaker{flex:none;font-size:11px;letter-spacing:.06em;color:var(--cyan);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+/* 字幕の見出し行：話者・保留中バッジ・メモボタンを1行にまとめ、字幕の高さを削らない */
+.scr-head{flex:none;display:flex;align-items:center;gap:8px;min-height:32px;margin:-2px 0 6px}
+.speaker{flex:1;min-width:0;font-size:11px;letter-spacing:.06em;color:var(--cyan);display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden}
 .speaker::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 6px currentColor}
 .speaker.human{color:var(--human)}
 .speaker.sys{color:var(--danger)}
@@ -144,19 +146,21 @@ button{font:inherit;color:inherit;touch-action:manipulation;cursor:pointer}
 .subtitle.human .caret{background:var(--human)}
 @keyframes blink{50%{opacity:0}}
 
-.memo{flex:none;display:flex;flex-wrap:wrap;gap:4px 6px;margin-bottom:8px}
-.memo[hidden]{display:none}
-.memo span{font-size:11px;line-height:1.3;padding:3px 7px;border-radius:6px;background:#141a22;border:1px solid var(--line);color:#aab6c3}
-.memo b{color:var(--warn);font-family:var(--mono);font-weight:700;margin-left:4px}
-.hold{flex:none;margin-top:8px}
+.hold{flex:none;display:flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--warn);padding:3px 8px;border:1px dashed rgba(255,207,62,.45);border-radius:8px;white-space:nowrap}
 .hold[hidden]{display:none}
-.holdlabel{display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--warn);padding:6px 0;border:1px dashed rgba(255,207,62,.35);border-radius:10px}
-.holdlabel .note{display:inline-block;animation:bob 1.2s ease-in-out infinite}
-.holdlabel .note:last-child{animation-delay:.6s}
-@keyframes bob{50%{transform:translateY(-4px)}}
+.hold .note{display:inline-block;animation:bob 1.2s ease-in-out infinite}
+.hold .note:last-child{animation-delay:.6s}
+@keyframes bob{50%{transform:translateY(-3px)}}
+.memobtn{
+  flex:none;height:32px;padding:0 10px;border-radius:9px;white-space:nowrap;
+  border:1px solid rgba(255,207,62,.6);background:#1d1a0e;color:var(--warn);
+  font-size:12px;font-weight:800;box-shadow:0 0 10px rgba(255,207,62,.15);
+}
+.memobtn[hidden]{display:none}
+.memobtn:active{transform:scale(.96)}
 .hint{
-  flex:none;margin-top:8px;font-size:12px;color:var(--warn);
-  border:1px dashed rgba(255,207,62,.5);border-radius:10px;padding:6px 10px;
+  flex:none;margin-top:6px;font-size:11px;color:var(--warn);
+  border:1px dashed rgba(255,207,62,.5);border-radius:8px;padding:4px 8px;
 }
 .hint[hidden]{display:none}
 
@@ -354,11 +358,37 @@ a.btn{text-decoration:none}
   color:var(--neon);text-shadow:0 0 12px rgba(57,255,154,.8),0 0 32px rgba(57,255,154,.35);
 }
 .m-goal em{font-style:normal;color:var(--warn);text-shadow:0 0 12px rgba(255,207,62,.8)}
-.m-memo{margin-top:18px;display:flex;flex-direction:column;gap:6px;width:100%;max-width:340px}
-.m-memo:empty{display:none}
-.m-memo div{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:7px 12px;border-radius:10px;background:var(--panel);border:1px solid var(--line);color:#aab6c3}
-.m-memo b{color:var(--warn);font-family:var(--mono);text-align:right}
-.m-tap{margin-top:28px;font-size:12px;color:var(--dim);animation:blink 1.2s steps(1) infinite}
+.m-hint{margin-top:20px;max-width:340px;font-size:13px;line-height:1.6;color:#c4cfdb;padding:8px 12px;border:1px dashed rgba(255,207,62,.45);border-radius:10px}
+.m-hint:empty{display:none}
+.m-hint b{color:var(--warn)}
+.m-tap{
+  margin-top:28px;padding:12px 28px;border-radius:999px;font-size:15px;font-weight:900;letter-spacing:.1em;
+  color:var(--bg);background:var(--neon);box-shadow:0 0 22px rgba(57,255,154,.45);
+  animation:tapPulse 1.4s ease-in-out infinite;
+}
+@keyframes tapPulse{50%{transform:scale(1.05);box-shadow:0 0 32px rgba(57,255,154,.7)}}
+
+/* ---------- memo（手元のメモ） ---------- */
+.memo-ov{z-index:42;align-items:center;background:rgba(5,7,10,.88)}
+.memo-ov .ov-inner{max-width:400px;align-items:stretch}
+.paper{
+  background:#fbf4d6;color:#2b2a26;border-radius:6px;padding:14px 16px 8px;
+  box-shadow:0 12px 34px rgba(0,0,0,.65);transform:rotate(-.5deg);
+  -webkit-user-select:text;user-select:text;
+}
+.paper-head{display:flex;align-items:center;gap:6px;font-size:16px;font-weight:900;padding-bottom:8px;border-bottom:2px solid rgba(200,60,60,.5)}
+.paper-list{list-style:none;margin:0;padding:0}
+.paper-list li{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:8px 0;font-size:14px;line-height:1.4;border-bottom:1px solid rgba(70,110,170,.25)}
+.paper-list li:last-child{border-bottom:none}
+.paper-list li span{flex:1;min-width:0;color:#5b574c}
+.paper-list li b{flex:none;max-width:60%;text-align:right;font-family:var(--mono);font-size:15px;color:#1b2a6b}
+.memo-note{text-align:center;font-size:12px;color:var(--dim)}
+/* 背の低いスマホでは、ダイヤルを少し詰めて字幕の高さを確保する */
+@media (max-height:700px){
+  .k{height:clamp(42px,7.2vh,56px)}
+  .k .d{font-size:clamp(20px,3.4vh,26px)}
+  .retry,.hang{height:clamp(46px,7.4vh,56px)}
+}
 @media (max-height:600px){
   .callinfo{padding:4px 0}
   .avatar{width:42px;height:42px;font-size:21px}
@@ -388,14 +418,13 @@ a.btn{text-decoration:none}
     </div>
   </section>
 
-  <div class="memo" id="memo" hidden></div>
-
   <section class="screen">
-    <div class="speaker" id="speaker">AI自動音声ガイダンス</div>
-    <div class="subtitle" id="subtitle"></div>
-    <div class="hold" id="holdPanel" hidden>
-      <div class="holdlabel"><span class="note">♪</span>保留中…<span class="note">♫</span></div>
+    <div class="scr-head">
+      <div class="speaker" id="speaker">AI自動音声ガイダンス</div>
+      <div class="hold" id="holdPanel" hidden><span class="note">♪</span>保留中<span class="note">♫</span></div>
+      <button class="memobtn" id="memoBtn" hidden>📝 メモを見る</button>
     </div>
+    <div class="subtitle" id="subtitle"></div>
     <div class="hint" id="hint" hidden>💡 抜け出せない？「やり直す」で最初から！</div>
   </section>
 
@@ -423,8 +452,20 @@ a.btn{text-decoration:none}
     <div class="m-label">MISSION</div>
     <div class="m-lead" id="mLead"></div>
     <div class="m-goal" id="mGoal"></div>
-    <div class="m-memo" id="mMemo"></div>
-    <div class="m-tap">タップでスタート</div>
+    <div class="m-hint" id="mHint"></div>
+    <div class="m-tap">タップで発信 📞</div>
+  </div>
+
+  <!-- 手元のメモ（通話中にいつでも見られる。時間は止まらない） -->
+  <div class="ov memo-ov" id="memoOv" hidden>
+    <div class="ov-inner">
+      <div class="paper">
+        <div class="paper-head">📝 <span id="memoTitle">メモ</span></div>
+        <ul class="paper-list" id="memoList"></ul>
+      </div>
+      <div class="memo-note">※ メモを見ている間も、通話は続いています</div>
+      <button class="btn call" id="memoClose">閉じる</button>
+    </div>
   </div>
 
   <!-- home -->
@@ -440,12 +481,11 @@ a.btn{text-decoration:none}
       <div class="card">
         <div class="lbl">ルール</div>
         <ul>
-          <li>ガイダンスを最後まで聞いて、ダイアルで番号を選べ</li>
-          <li><b>喋り終わる前に押すと</b>怒られて最初から</li>
+          <li>ガイダンスを聞いて、ダイアルで番号を選べ（途中で押してもOK。<b>聞き逃し</b>に注意）</li>
           <li><b>Web・SMS誘導</b>に乗ると即切断（ゲームオーバー）</li>
           <li>間違えると<b>たらい回し</b>。「やり直す」で最初から</li>
           <li>保留音は<b>耐えろ</b>。ボタンを押すと…？</li>
-          <li>番号の入力は<b>メモ</b>を見て、最後に＃。＊で消去</li>
+          <li>番号は「📝メモを見る」で探せ。<b>関係ない数字</b>も書いてある。最後に＃、＊で消去</li>
         </ul>
       </div>
       <a class="btn sub more" href="https://red-freegames.github.io/">🎮 他のゲームを見る</a>
@@ -497,7 +537,7 @@ a.btn{text-decoration:none}
         <div class="stat"><div class="v" id="clTime">00:00</div><div class="n">経過時間</div></div>
         <div class="stat rank"><div class="v" id="clRank">S</div><div class="n">ランク</div></div>
         <div class="stat"><div class="v" id="clRedial">0</div><div class="n">やり直し</div></div>
-        <div class="stat"><div class="v" id="clMiss">0</div><div class="n">怒られ／たらい回し</div></div>
+        <div class="stat"><div class="v" id="clMiss">0</div><div class="n">入力ミス／たらい回し</div></div>
       </div>
       <button class="btn call" id="clNext">次のステージへ ▶</button>
       <button class="btn x" id="xBtn">𝕏 でシェア</button>
@@ -540,10 +580,13 @@ const CHAR_MS = 42;
      メニュー : { text, routes: { キー: 遷移先 } }
      番号入力 : { type: 'input', text, answer: '1234', next: 遷移先 }   … 入力して最後に＃
      担当者   : { type: 'human', who: { name, icon }, lines: [...], next: 遷移先 }   … 喋り終えたら自動で next へ
-   遷移先: ノードID / 'web'（誘導トラップ） / 'loop:名前'（たらい回し）
+     案内     : { type: 'talk', lines: [...], next: 遷移先 }   … 自動音声が喋り終えたら自動で next へ
+   遷移先: ノードID / 'web'（誘導トラップ） / 'loop:名前'（たらい回し。抜けるには「やり直す」）
+          'loop:名前>ノードID'（案内を1回聞かされてから、そのノードに戻される）
           'hold'（保留→最後の担当者に繋がってクリア） / 'hold>ノードID'（保留→そのノードへ。転送用）
+   保留の長さや前置きは、遷移元のノードに holdMs / holdIntro / holdLine を書くと変えられる。
    ノードに company を書くと、そのノードで通話先の表示名が変わる（転送先の部署名など）。
-   memo はプレイヤーの手元情報（画面上部とステージ開始時に表示）。
+   memo はプレイヤーの手元のメモ（通話中に「メモを見る」で開く）。正解と関係ない数字も混ぜておく。
    path はテスト・最短時間計算用の正解ルート（入力ノードは '1234#' のように押すキーを並べる）。 */
 const STAGES = [
   /* ---------------- 初級 ---------------- */
@@ -555,6 +598,15 @@ const STAGES = [
     lead: 'カードの不正利用を発見！',
     goal: ['<em>人間の</em>オペレーターに', 'カードを止めてもらえ！'],
     bar: '不正利用カードを<b>人間に</b>止めてもらえ',
+    memo: {
+      title: '不正利用メモ',
+      items: [
+        ['身に覚えのない利用', '10月30日'],
+        ['金額', '49,800円'],
+        ['利用先', '海外のネットショップ'],
+        ['カード', '手元にある（なくしてない）'],
+      ],
+    },
     trap: 'Web',
     webLine: 'ご入力ありがとうございます。お手続き用URLをSMSでお送りしました。Webをご利用ください。',
     operator: '佐藤', operatorIcon: '👩‍💼',
@@ -601,6 +653,15 @@ const STAGES = [
     lead: 'スマホの画面が真っ暗に！',
     goal: ['<em>人間の</em>修理担当者に', '修理を受け付けてもらえ！'],
     bar: 'スマホの修理を<b>人間に</b>受け付けてもらえ',
+    memo: {
+      title: 'スマホメモ',
+      items: [
+        ['症状', '画面が真っ暗'],
+        ['再起動', '試したけどダメ'],
+        ['機種', 'Mirai Phone 12'],
+        ['買った日', '2024年3月'],
+      ],
+    },
     trap: 'チャット',
     webLine: 'ご入力ありがとうございます。チャットサポートのURLをSMSでお送りしました。チャットをご利用ください。',
     operator: '田中', operatorIcon: '👨‍🔧',
@@ -635,6 +696,15 @@ const STAGES = [
     lead: '「配達完了」なのに荷物がない！',
     goal: ['<em>人間の</em>スタッフに', '荷物を探してもらえ！'],
     bar: '消えた荷物を<b>人間に</b>探してもらえ',
+    memo: {
+      title: '荷物メモ',
+      items: [
+        ['追跡状況', '配達完了（10/31 14:02）'],
+        ['置き配', '指定していない'],
+        ['伝票番号', '4410-2286-9013'],
+        ['中身', '新しいスニーカー'],
+      ],
+    },
     trap: 'LINE',
     webLine: 'ご入力ありがとうございます。LINEの友だち追加URLをSMSでお送りしました。LINEをご利用ください。',
     operator: '鈴木', operatorIcon: '🧑‍💼',
@@ -671,7 +741,19 @@ const STAGES = [
     lead: '来週、引っ越し！',
     goal: ['<em>人間に</em>電気の契約を', '新居へ移してもらえ！'],
     bar: '電気の契約を<b>人間に</b>新居へ移してもらえ',
-    memo: [['お客様番号', '3150'], ['新住所の郵便番号', '150-0041']],
+    memo: {
+      title: '引っ越しメモ',
+      items: [
+        ['ミライ電力 お客様番号', '3150'],
+        ['ミライガス お客様番号', '7214'],
+        ['水道 お客様番号', '0981'],
+        ['今の住所', '〒160-0023'],
+        ['新しい住所', '〒150-0041'],
+        ['新居の部屋番号', '302号室'],
+        ['引っ越し日', '11月8日'],
+        ['管理会社', '03-5521-8890'],
+      ],
+    },
     trap: 'Web',
     webLine: 'ご入力ありがとうございます。お手続き用URLをSMSでお送りしました。Webをご利用ください。',
     operator: '高橋', operatorIcon: '👩‍💼',
@@ -713,7 +795,19 @@ const STAGES = [
     lead: '駐車場でぶつけられた！',
     goal: ['<em>人間の</em>担当者に', '事故を受け付けさせろ！'],
     bar: '事故を<b>人間に</b>受け付けさせろ',
-    memo: [['証券番号の下4桁', '7702'], ['ケガ人', 'なし'], ['事故の相手', 'あり（車）']],
+    memo: {
+      title: '事故メモ',
+      items: [
+        ['自動車保険の証券番号', 'MS-5513-7702'],
+        ['火災保険の証券番号', 'KS-2208-4410'],
+        ['自分の車のナンバー', '品川 330 あ 12-34'],
+        ['相手の車のナンバー', '横浜 500 さ 88-19'],
+        ['相手の電話番号', '090-3321-6607'],
+        ['事故の時刻', '14時25分'],
+        ['ケガ人', 'なし'],
+        ['事故の相手', 'あり（車）'],
+      ],
+    },
     trap: 'アプリ',
     webLine: 'ご入力ありがとうございます。アプリのダウンロードURLをSMSでお送りしました。アプリから事故をご報告ください。',
     operator: '伊藤', operatorIcon: '👨‍💼',
@@ -758,7 +852,18 @@ const STAGES = [
     lead: 'ネットが突然つながらない！',
     goal: ['<em>人間の</em>技術者に', '故障を調べてもらえ！'],
     bar: '回線の故障を<b>人間に</b>調べてもらえ',
-    memo: [['契約ID', '5566'], ['ルーターのランプ', '赤く点滅'], ['再起動', 'もう試した']],
+    memo: {
+      title: 'ネット回線メモ',
+      items: [
+        ['ミライ光 契約ID', '5566'],
+        ['プロバイダの会員ID', '8120'],
+        ['Wi-Fiのパスワード', '7391-0264'],
+        ['ルーターの型番', 'MR-2400'],
+        ['マンションの部屋番号', '1105'],
+        ['ルーターのランプ', '赤く点滅'],
+        ['再起動', 'もう試した'],
+      ],
+    },
     trap: 'チャット',
     webLine: 'ご入力ありがとうございます。チャットのURLをSMSでお送りしました。チャットでご連絡ください。',
     operator: '渡辺', operatorIcon: '🧑‍🔧',
@@ -802,44 +907,83 @@ const STAGES = [
     title: '乗り遅れた！',
     desc: '今日中の別の便に振り替えろ',
     company: 'ミライ航空 予約センター',
-    lead: '乗り継ぎ便に乗り遅れた！',
+    lead: '前の便が遅れて、乗り継ぎ便に乗り遅れた！',
     goal: ['<em>人間に</em>頼んで今日の', '別の便に振り替えろ！'],
     bar: '今日の別便に<b>人間に</b>振り替えてもらえ',
-    memo: [['予約番号', '8807'], ['搭乗日', '11月3日'], ['人数', '1名'], ['マイレージ会員', 'ではない']],
+    memo: {
+      title: '旅程メモ',
+      items: [
+        ['今回の予約番号', '8807'],
+        ['前回の旅行の予約番号', '6631'],
+        ['搭乗日', '11月3日'],
+        ['1本目の便（40分遅れた）', 'MR 512'],
+        ['乗り継ぐはずだった便', 'MR 1180'],
+        ['帰りの便', '11月7日 MR 1181'],
+        ['人数', '1名'],
+        ['座席', 'どこでもいい'],
+        ['マイレージ会員', '未登録'],
+        ['ホテルの予約番号', '0322'],
+      ],
+    },
     trap: 'Web',
     webLine: 'ご入力ありがとうございます。WebサイトのURLをSMSでお送りしました。Webで空席をお探しください。',
     operator: '小林', operatorIcon: '👩‍✈️',
     humanLine: 'お待たせいたしました。予約センターの小林です。本日の最終便に、お席をお取りできますよ。',
     clearMsg: '小林さんが最終便の窓側席を取ってくれた。<br>空港のベンチで、そっとガッツポーズ。',
-    hold: { ms: 11000, webOffer: true },
+    hold: { ms: 30000, webOffer: true },
     start: 'top',
-    path: [['top', '2'], ['change', '3'], ['today', '5'], ['rsv', '8807#'], ['date', '1103#'], ['pax', '1'], ['mile', '2'], ['final', '0']],
+    path: [['top', '2'], ['change', '4'], ['today', '5'], ['why', '3'], ['rsv', '8807#'], ['date', '1103#'], ['flight', '1180#'], ['pax', '1'], ['mile', '2'], ['seat', '3'], ['readback', '1'], ['crowded', '0']],
     nodes: {
       top: {
-        text: 'お電話ありがとうございます。ミライ航空 予約センターです。新規のご予約は【1】。ご予約の変更・取り消しは【2】。マイレージについては【3】。手荷物・その他のお問い合わせは【4】を、押してください。',
+        text: 'お電話ありがとうございます。ミライ航空 予約センターです。この通話は、サービス品質の向上と、内容確認のため、録音させていただきます。なお、ミライ航空のWebサイト・アプリでは、ご予約の確認・変更を、24時間受け付けております。ご用件を番号でお選びください。新規のご予約は【1】。ご予約の変更・取り消しは【2】。マイレージについては【3】。手荷物・その他のお問い合わせは【4】を、押してください。',
         routes: { '1': 'loop:shinki', '2': 'change', '3': 'loop:mileage', '4': 'loop:nimotsu' },
       },
       change: {
-        text: 'ご予約の変更・取り消しですね。ご予約の取り消しは【1】。日付・便の変更は【2】。本日ご出発の便に関するお問い合わせは【3】を、押してください。',
-        routes: { '1': 'loop:torikeshi', '2': 'loop:henkou', '3': 'today' },
+        text: 'ご予約の変更・取り消しですね。ご予約の取り消しは【1】。日付・便の変更は【2】。座席の変更は【3】。本日ご出発の便に関するお問い合わせは【4】を、押してください。',
+        routes: { '1': 'loop:torikeshi', '2': 'loop:henkou', '3': 'loop:seat', '4': 'today' },
       },
       today: {
-        text: '本日ご出発の便ですね。運航状況の確認は【1】を。乗り遅れた場合、または乗り継ぎができなかった場合は【5】を、押してください。',
-        routes: { '1': 'loop:unkou', '5': 'rsv' },
+        text: '本日ご出発の便ですね。運航状況の確認は【1】を。搭乗口・搭乗時刻の確認は【2】を。乗り遅れた場合、または乗り継ぎができなかった場合は【5】を、押してください。',
+        routes: { '1': 'loop:unkou', '2': 'loop:gate', '5': 'why' },
+      },
+      why: {
+        text: '恐れ入りますが、ご搭乗になれなかった理由をお選びください。お客様のご都合による場合は【1】。天候による欠航・遅延の場合は【2】。機材の都合など、ミライ航空の遅延による場合は【3】を、押してください。',
+        routes: { '1': 'loop:jiko', '2': 'loop:tenko', '3': 'notice' },
+      },
+      notice: {
+        type: 'talk',
+        lines: [
+          'ミライ航空の遅延により、乗り継ぎができなかったのですね。大変ご迷惑をおかけしております。',
+          'この場合、お振替の手数料はかかりません。ただし、お振替には、ご予約内容の確認が必要です。',
+          'お手元に、予約番号、搭乗日、そして、乗り継ぐ予定だった便の便名を、ご用意ください。',
+        ],
+        next: 'hold>rsv',
+        holdIntro: '予約確認システムに、お繋ぎしております。', holdLine: '少々お待ちください。', holdMs: 20000,
       },
       rsv: { type: 'input', text: '予約番号4桁を入力し、最後に【＃】を押してください。', answer: '8807', next: 'date' },
-      date: { type: 'input', text: 'ご搭乗日を、月と日の4桁で入力し、最後に【＃】を押してください。例えば、1月5日の場合は、0105です。', answer: '1103', next: 'pax' },
+      date: { type: 'input', text: 'ご搭乗日を、月と日の4桁で入力し、最後に【＃】を押してください。例えば、1月5日の場合は、0105です。', answer: '1103', next: 'flight' },
+      flight: { type: 'input', text: '乗り継ぐ予定だった便の、便名の数字部分を入力し、最後に【＃】を押してください。例えば、MR 123便の場合は、123です。', answer: '1180', next: 'pax' },
       pax: {
         text: 'ご搭乗のお客様の人数を、1から9の数字で押してください。',
         routes: { '1': 'mile', '2': 'loop:ninzu', '3': 'loop:ninzu', '4': 'loop:ninzu', '5': 'loop:ninzu', '6': 'loop:ninzu', '7': 'loop:ninzu', '8': 'loop:ninzu', '9': 'loop:ninzu' },
       },
       mile: {
         text: 'マイレージ会員の方は【1】を。会員でない方は【2】を、押してください。なお、今ならアプリから会員登録で、500マイルプレゼント！アプリのURLをSMSで受け取る場合は【9】を、押してください。',
-        routes: { '1': 'loop:mile', '2': 'final', '9': 'web' },
+        routes: { '1': 'loop:mile', '2': 'seat', '9': 'web' },
       },
-      final: {
-        text: '振替のご相談は、担当者がお伺いします。ただいま大変混み合っており、Webなら待ち時間なしで、空席のある便をお選びいただけます。Webをご希望の場合は【1】を。担当者をご希望の場合は【0】を、押してください。',
+      seat: {
+        text: 'お振替後の、座席のご希望をお選びください。窓側は【1】。通路側は【2】。どちらでもよい場合は【3】を、押してください。なお、座席のご希望は、空席状況により、お受けできない場合がございます。',
+        routes: { '1': 'loop:seatfull', '2': 'loop:seatfull', '3': 'readback' },
+      },
+      readback: {
+        text: '確認いたします。予約番号、8807。ご搭乗日、11月3日。乗り継ぎ予定の便、1180便。ご搭乗人数、1名様。座席のご希望、なし。以上の内容でよろしければ【1】を。訂正する場合は【2】を、押してください。',
+        routes: { '1': 'hold>crowded', '2': 'rsv' },
+        holdIntro: '本日の空席を、確認しております。', holdLine: '少々お待ちください。', holdMs: 25000,
+      },
+      crowded: {
+        text: 'お待たせいたしました。本日のお振替が可能な便が、2便見つかりました。ただいま、お振替のお問い合わせが、大変混み合っております。Webなら、待ち時間なしで、お好きな便をお選びいただけます。Webをご希望の場合は【1】を。担当者をご希望の場合は【0】を、押してください。',
         routes: { '1': 'web', '0': 'hold' },
+        holdMs: 60000,
       },
     },
     loops: {
@@ -848,9 +992,14 @@ const STAGES = [
       nimotsu: ['手荷物のお問い合わせですね。お預けの手荷物は、おひとり様2個まで、無料でお預かりいたします。'],
       torikeshi: ['ご予約の取り消しですね。取り消しには、所定の取消手数料がかかります。手数料の詳細は、Webサイトをご覧ください。'],
       henkou: ['日付・便の変更は、Webサイトの予約確認ページから承っております。なお、本日ご出発の便の変更は、こちらではお受けできません。'],
+      seat: ['座席の変更は、Webサイト・アプリの、ご予約確認ページから承っております。'],
       unkou: ['運航状況をお知らせします。本日のミライ航空の便は、すべて定刻どおり運航しております。'],
+      gate: ['搭乗口は、出発時刻の30分前までに、空港の案内表示でご確認ください。'],
+      jiko: ['お客様のご都合により、ご搭乗になれなかった場合、ご予約は、取り消し扱いとなります。新たにご予約のうえ、ご搭乗ください。'],
+      tenko: ['天候による欠航・遅延の場合のお振替は、Webサイトの、欠航・遅延のご案内ページから承っております。'],
       ninzu: ['2名様以上のご予約の変更は、団体予約センターで承ります。団体予約センターの受付時間は、平日の10時から17時です。'],
       mile: ['マイレージ会員番号10桁を、入力してください。……入力が確認できませんでした。'],
+      seatfull: ['ご希望の座席は、ただいま満席です。ほかの便をお探しになる場合は、Webサイトをご利用ください。'],
     },
     randomLoops: ['shinki', 'mileage', 'nimotsu'],
     loopAch: {},
@@ -860,38 +1009,82 @@ const STAGES = [
     title: '振込ミス',
     desc: '間違えて送ったお金を取り戻せ',
     company: 'ミライ銀行 コールセンター',
-    lead: '振込先を間違えた！3万円が…',
+    lead: '口座番号を1桁間違えて、3万円を振り込んだ！',
     goal: ['<em>人間に</em>お金を', '取り戻してもらえ！'],
     bar: '誤送金を<b>人間に</b>組み戻してもらえ',
-    memo: [['支店番号', '123'], ['口座番号', '4455667'], ['生年月日', '1992年7月5日'], ['振込日', '10月28日']],
+    memo: {
+      title: '振込メモ',
+      items: [
+        ['自分の口座：支店番号', '123'],
+        ['自分の口座：口座番号', '4455667'],
+        ['自分の生年月日', '1992年7月5日'],
+        ['本当の振込先：支店番号', '456'],
+        ['本当の振込先：口座番号', '7788990'],
+        ['間違えて振り込んだ先：支店番号', '456'],
+        ['間違えて振り込んだ先：口座番号', '7788909'],
+        ['振り込んだ金額', '30,000円'],
+        ['振り込んだ日', '10月28日'],
+        ['家賃の引き落とし日', '11月27日'],
+      ],
+    },
     trap: 'アプリ',
     webLine: 'ご入力ありがとうございます。ミライ銀行アプリのURLをSMSでお送りしました。アプリをご利用ください。',
     operator: '中村', operatorIcon: '👨‍💼',
     humanLine: 'お電話かわりました。中村です。組戻しのお手続き、確かに承ります。',
     clearMsg: '中村さんが組戻しを手配してくれた。<br>3万円が、帰ってくる。',
-    hold: { ms: 11000, webOffer: true },
+    hold: { ms: 30000, webOffer: true },
     start: 'top',
-    path: [['top', '2'], ['furikomi', '6'], ['shiten', '123#'], ['koza', '4455667#'], ['birth', '920705#'], ['date', '1028#'], ['kakunin', '1'], ['final', '9']],
+    path: [['top', '2'], ['furikomi', '6'], ['shiten', '123#'], ['koza', '4455667#'], ['birth', '920705#'], ['date', '1028#'], ['amount', '30000#'], ['bank', '1'], ['dshiten', '456#'], ['dkoza', '7788909#'], ['why', '1'], ['kakunin', '1'], ['readback', '1'], ['final', '9']],
     nodes: {
       top: {
-        text: 'お電話ありがとうございます。ミライ銀行です。残高・入出金明細は【1】。お振り込みについては【2】。カード・通帳の紛失は【3】。各種お手続きは【4】を、押してください。',
+        text: 'お電話ありがとうございます。ミライ銀行 コールセンターです。この通話は、お取引内容の確認のため、録音させていただきます。なお、お客様の暗証番号やパスワードを、当行からお電話でお伺いすることは、ございません。ご用件をお選びください。残高・入出金明細は【1】。お振り込みについては【2】。カード・通帳の紛失は【3】。各種お手続きは【4】を、押してください。',
         routes: { '1': 'loop:zandaka', '2': 'furikomi', '3': 'loop:funshitsu', '4': 'loop:tetsuduki' },
       },
       furikomi: {
         text: 'お振り込みに関するお問い合わせですね。振込手数料のご案内は【1】。振込予約の取り消しは【2】。誤ったお振り込みの、組戻しのお申し込みは【6】を、押してください。',
-        routes: { '1': 'loop:tesuryo', '2': 'loop:yoyaku', '6': 'shiten' },
+        routes: { '1': 'loop:tesuryo', '2': 'loop:yoyaku', '6': 'caution' },
       },
-      shiten: { type: 'input', text: 'ご本人確認を行います。お取引の、支店番号3桁を入力し、最後に【＃】を押してください。', answer: '123', next: 'koza' },
-      koza: { type: 'input', text: '口座番号7桁を入力し、最後に【＃】を押してください。', answer: '4455667', next: 'birth' },
-      birth: { type: 'input', text: 'ご登録の生年月日を、西暦の下2桁と、月日の、6桁で入力し、最後に【＃】を押してください。例えば、1990年1月5日の場合は、900105です。', answer: '920705', next: 'date' },
-      date: { type: 'input', text: 'お振り込みをされた日を、月と日の4桁で入力し、最後に【＃】を押してください。', answer: '1028', next: 'kakunin' },
+      caution: {
+        type: 'talk',
+        lines: [
+          '誤ったお振り込みの、組戻しのお申し込みですね。',
+          '組戻しとは、お振り込みの取り消しを、受取人の方の同意を得て行う、お手続きです。受取人の方の同意が得られない場合、ご返金できないことがございます。',
+          'また、組戻しには、1件につき、880円の手数料がかかります。この手数料は、ご返金の有無にかかわらず、お返しできません。',
+          'それでは、ご本人確認を行います。',
+        ],
+        next: 'shiten',
+      },
+      shiten: { type: 'input', text: 'お客様ご自身の口座の、支店番号3桁を入力し、最後に【＃】を押してください。', answer: '123', next: 'koza' },
+      koza: { type: 'input', text: 'お客様ご自身の、口座番号7桁を入力し、最後に【＃】を押してください。', answer: '4455667', next: 'birth' },
+      birth: {
+        type: 'input', text: 'ご登録の生年月日を、西暦の下2桁と、月日の、6桁で入力し、最後に【＃】を押してください。例えば、1990年1月5日の場合は、900105です。', answer: '920705', next: 'hold>date',
+        holdIntro: 'ご本人確認を行っております。', holdLine: '少々お待ちください。', holdMs: 25000,
+      },
+      date: { type: 'input', text: 'ご本人確認が取れました。続いて、お振り込みの内容を確認します。お振り込みをされた日を、月と日の4桁で入力し、最後に【＃】を押してください。', answer: '1028', next: 'amount' },
+      amount: { type: 'input', text: 'お振り込みの金額を、円単位で入力し、最後に【＃】を押してください。', answer: '30000', next: 'bank' },
+      bank: {
+        text: '誤って振り込んだ先は、ミライ銀行の口座ですか。ミライ銀行の口座の場合は【1】を。他の銀行の口座の場合は【2】を、押してください。',
+        routes: { '1': 'dshiten', '2': 'loop:takou' },
+      },
+      dshiten: { type: 'input', text: '誤って振り込んだ先の、支店番号3桁を入力し、最後に【＃】を押してください。', answer: '456', next: 'dkoza' },
+      dkoza: { type: 'input', text: '誤って振り込んだ先の、口座番号7桁を入力し、最後に【＃】を押してください。', answer: '7788909', next: 'why' },
+      why: {
+        text: '誤ってお振り込みをされた理由をお選びください。振込先の口座番号の入力間違いは【1】。金額の入力間違いは【2】。同じお振り込みを二重にされた場合は【3】を、押してください。',
+        routes: { '1': 'kakunin', '2': 'loop:kingaku', '3': 'loop:nijuu' },
+      },
       kakunin: {
         text: '組戻しには、所定の手数料がかかります。また、受取人の同意が必要となります。ご了承いただける場合は【1】を。了承しない場合は【2】を、押してください。',
-        routes: { '1': 'final', '2': 'loop:fushochi' },
+        routes: { '1': 'readback', '2': 'loop:fushochi' },
+      },
+      readback: {
+        text: '確認いたします。10月28日、3万円のお振り込み。誤った振込先は、456支店、口座番号、7788909。以上の内容でよろしければ【1】を。訂正する場合は【2】を、押してください。',
+        routes: { '1': 'hold>final', '2': 'date' },
+        holdIntro: '組戻しの受付状況を、確認しております。', holdLine: '少々お待ちください。', holdMs: 25000,
       },
       final: {
         text: '担当者にお繋ぎします。なお、組戻しのお申し込みは、ミライ銀行アプリからも可能です。アプリをご利用の場合は【1】を。担当者をご希望の場合は【9】を、押してください。',
         routes: { '1': 'web', '9': 'hold' },
+        holdMs: 60000,
       },
     },
     loops: {
@@ -900,6 +1093,9 @@ const STAGES = [
       tetsuduki: ['各種お手続きは、お近くの支店窓口、またはアプリから承っております。'],
       tesuryo: ['振込手数料のご案内です。ミライ銀行あては無料、他の銀行あては、1回につき、220円です。'],
       yoyaku: ['振込予約の取り消しは、ミライ銀行アプリの、振込予約一覧から承っております。'],
+      takou: ['他の銀行あての組戻しは、お振り込みをされた支店の窓口で承ります。窓口の営業時間は、平日の9時から15時です。'],
+      kingaku: ['金額の入力間違いの場合は、差額のみのご返金はできません。お手数ですが、最初からおかけ直しください。'],
+      nijuu: ['二重のお振り込みについては、お取引明細をご確認のうえ、改めておかけ直しください。'],
       fushochi: ['組戻しのお手続きを中止しました。ほかにご用件がございましたら、最初のメニューから、お選びください。……ほかにご用件がございましたら……'],
     },
     randomLoops: ['zandaka', 'tetsuduki'],
@@ -913,18 +1109,33 @@ const STAGES = [
     lead: '祖母の代わりに住民票を取りたい',
     goal: ['<em>人間の</em>職員に', '郵送請求を確認しろ！'],
     bar: '代理の郵送請求を<b>人間に</b>確認しろ',
-    memo: [['取りたいもの', '住民票の写し'], ['請求方法', '郵送'], ['請求者', '代理人（委任状あり）'], ['祖母の生年月日', '1949年3月14日']],
+    memo: {
+      title: '祖母から頼まれたメモ',
+      items: [
+        ['取りたいもの', '住民票の写し'],
+        ['取り方', '郵送で'],
+        ['必要な部数', '2通'],
+        ['本籍の記載', 'いらない'],
+        ['マイナンバーの記載', 'いらない'],
+        ['祖母の生年月日', '1949年3月14日'],
+        ['自分の生年月日', '1996年11月2日'],
+        ['祖母の住所の郵便番号', '〒321-0042'],
+        ['自分の住所の郵便番号', '〒150-0041'],
+        ['委任状', 'あり（祖母のサイン済み）'],
+        ['祖母の家の電話', '0287-55-1203'],
+      ],
+    },
     trap: 'コンビニ',
     webLine: 'ご入力ありがとうございます。コンビニ交付のご案内をSMSでお送りしました。お近くのコンビニをご利用ください。',
     operator: '加藤', operatorIcon: '🧑‍💼',
-    humanLine: 'お待たせしました。市民課の加藤です。代理人の郵送請求ですね、ご説明します。',
+    humanLine: 'お待たせしました。市民課の加藤です。代理人の郵送請求ですね、必要な書類をご説明します。',
     clearMsg: '加藤さんが、必要な書類を丁寧に教えてくれた。<br>おばあちゃんにも、いい報告ができる。',
-    hold: { ms: 12000, webOffer: false },
+    hold: { ms: 30000, webOffer: false },
     start: 'top',
-    path: [['top', '1'], ['cert', '1'], ['how', '2'], ['dairi', '2'], ['inin', '1'], ['birth', '19490314#'], ['final', '*']],
+    path: [['top', '1'], ['cert', '1'], ['how', '2'], ['dairi', '2'], ['inin', '1'], ['birth', '19490314#'], ['zip', '3210042#'], ['busu', '2'], ['honseki', '2'], ['mynum', '2'], ['shimin', '3'], ['final', '*']],
     nodes: {
       top: {
-        text: 'ミライ市役所です。この電話は、自動音声でご案内しています。各種証明書については【1】。税金については【2】。ごみ・環境については【3】。子育て・福祉については【4】。その他の窓口については【0】を、押してください。',
+        text: 'ミライ市役所です。この電話は、自動音声でご案内しています。お問い合わせの内容によっては、担当課へ転送いたします。なお、市役所の開庁時間は、平日の午前8時30分から、午後5時15分までです。ご用件をお選びください。各種証明書については【1】。税金については【2】。ごみ・環境については【3】。子育て・福祉については【4】。その他の窓口については【0】を、押してください。',
         routes: { '1': 'cert', '2': 'loop:zei', '3': 'loop:gomi', '4': 'loop:kosodate', '0': 'loop:sonota' },
       },
       cert: {
@@ -943,10 +1154,30 @@ const STAGES = [
         text: '代理人からのご請求には、委任状が必要です。委任状をお持ちの場合は【1】を。お持ちでない場合は【2】を、押してください。',
         routes: { '1': 'birth', '2': 'loop:ininjo' },
       },
-      birth: { type: 'input', text: '住民票が必要な、ご本人の生年月日を、西暦から8桁で入力し、最後に【＃】を押してください。例えば、1990年1月5日の場合は、19900105です。', answer: '19490314', next: 'final' },
+      birth: { type: 'input', text: '住民票が必要な、ご本人の生年月日を、西暦から8桁で入力し、最後に【＃】を押してください。例えば、1990年1月5日の場合は、19900105です。', answer: '19490314', next: 'zip' },
+      zip: { type: 'input', text: '住民票が必要な、ご本人の、ご住所の郵便番号7桁を入力し、最後に【＃】を押してください。', answer: '3210042', next: 'hold>busu', holdIntro: '住民票のデータを、照会しております。', holdLine: '少々お待ちください。', holdMs: 20000 },
+      busu: {
+        text: '必要な部数を、1から9の数字で押してください。',
+        routes: { '1': 'loop:busu', '2': 'honseki', '3': 'loop:busu', '4': 'loop:busu', '5': 'loop:busu', '6': 'loop:busu', '7': 'loop:busu', '8': 'loop:busu', '9': 'loop:busu' },
+      },
+      honseki: {
+        text: '住民票の写しに、本籍・筆頭者の記載は必要ですか。必要な場合は【1】を。不要な場合は【2】を、押してください。',
+        routes: { '1': 'loop:honseki', '2': 'mynum' },
+      },
+      mynum: {
+        text: 'マイナンバーの記載は必要ですか。必要な場合は【1】を。不要な場合は【2】を、押してください。',
+        routes: { '1': 'loop:mynum', '2': 'hold>shimin' },
+        holdIntro: '市民課 証明係へ、転送しております。', holdLine: 'そのまま、お待ちください。', holdMs: 35000,
+      },
+      shimin: {
+        company: 'ミライ市役所 市民課',
+        text: 'ミライ市役所 市民課 証明係です。ただいま、窓口が大変混み合っており、窓口での待ち時間は、約90分です。郵送請求の、請求書の書き方については【1】。郵送請求の手数料と、お支払い方法については【2】。代理人による郵送請求の、内容の確認は【3】を、押してください。',
+        routes: { '1': 'loop:kakikata', '2': 'loop:tesuryo', '3': 'final' },
+      },
       final: {
-        text: '市民課にお繋ぎします。なお、市民課の受付時間外の場合は、留守番電話に切り替わります。担当者とお話しになる場合は【＊】を、押してください。',
-        routes: { '*': 'hold' },
+        text: '担当職員にお繋ぎします。なお、担当職員が席を外している場合は、留守番電話に切り替わります。また、マイナンバーカードをお持ちの方は、コンビニ交付が便利です。コンビニ交付のご案内は【8】を。担当職員とお話しになる場合は【＊】を、押してください。',
+        routes: { '8': 'web', '*': 'hold' },
+        holdMs: 60000,
       },
     },
     loops: {
@@ -959,6 +1190,11 @@ const STAGES = [
       madoguchi: ['窓口の受付時間は、平日の午前8時30分から、午後5時15分までです。土日祝日は、お休みです。'],
       honnin: ['ご本人からの郵送請求は、市のホームページから請求書をダウンロードし、本人確認書類の写しを同封して、お送りください。'],
       ininjo: ['代理人からのご請求には、委任状が必要です。委任状の様式は、市のホームページからダウンロードできます。ご用意のうえ、おかけ直しください。'],
+      busu: ['ご指定の部数を承りました。……申し訳ございません。代理人の方の郵送請求は、委任状に記載された部数までとなります。委任状をご確認のうえ、おかけ直しください。'],
+      honseki: ['本籍の記載がある住民票の写しを、代理人の方が請求する場合は、委任状に、その旨の記載が必要です。委任状をご確認のうえ、おかけ直しください。'],
+      mynum: ['マイナンバー入りの住民票の写しは、代理人の方へは、お送りできません。ご本人の住所あてに郵送いたします。……お手数ですが、最初からおかけ直しください。'],
+      kakikata: ['郵送請求の請求書は、市のホームページからダウンロードできます。記入例も、あわせてご覧ください。'],
+      tesuryo: ['住民票の写しの手数料は、1通300円です。お支払いは、郵便局の定額小為替でお願いします。'],
     },
     randomLoops: ['zei', 'gomi', 'kosodate'],
     loopAch: {},
@@ -973,48 +1209,89 @@ const STAGES = [
     lead: '旅行先のアメリカでカードが使えない！',
     goal: ['<em>人間に</em>カードの', '制限を解除させろ！'],
     bar: 'カードの利用制限を<b>人間に</b>解除させろ',
-    memo: [['カード番号の下4桁', '3344'], ['生年月日', '6月12日'], ['滞在国', 'アメリカ']],
+    memo: {
+      title: '旅行メモ',
+      items: [
+        ['いま使っているカード（下4桁）', '3344'],
+        ['家族カード（下4桁）', '3345'],
+        ['古いカード・期限切れ（下4桁）', '9012'],
+        ['生年月日', '1990年6月12日'],
+        ['パスポート番号', 'TK8842107'],
+        ['滞在先', 'アメリカ・ニューヨーク'],
+        ['帰国日', '11月9日'],
+        ['ホテルの電話', '+1-212-555-0148'],
+        ['ホテル代（カードで支払い済み）', '$480'],
+        ['日本の携帯（下4桁）', '2020'],
+      ],
+    },
     trap: 'Web',
     webLine: 'ご入力ありがとうございます。お手続き用URLをSMSでお送りしました。Webをご利用ください。',
     operator: '山口', operatorIcon: '👩‍💼',
-    humanLine: 'お待たせいたしました。海外デスクの山口です。カードの制限、すぐに解除いたしますね。',
-    clearMsg: '山口さんが3秒でロックを解除してくれた。<br>最初からここに繋がっていれば…。',
-    hold: { ms: 9000, webOffer: true },
+    humanLine: 'お待たせいたしました。セキュリティ部門の山口です。ご本人様と確認できましたので、カードの制限を、ただいま解除いたしました。',
+    clearMsg: '山口さんが3秒でロックを解除してくれた。<br>4つ目の窓口にして、ようやく。',
+    hold: { ms: 30000, webOffer: true },
     start: 'top',
-    path: [['top', '3'], ['abroad', '2'], ['card', '3344#'], ['birth', '0612#'], ['wait', '0'], ['desk_top', '2'], ['desk_card', '3344#'], ['desk_country', '3']],
+    path: [['top', '3'], ['abroad', '3'], ['card', '3344#'], ['birth', '0612#'], ['wait', '0'], ['desk_top', '2'], ['desk_card', '3344#'], ['desk_country', '3'], ['desk_return', '1109#'], ['desk_use', '1'], ['sec_top', '3344#'], ['sec_birth', '19900612#'], ['sec_how', '2']],
     nodes: {
       top: {
-        text: 'お電話ありがとうございます。ミライカード カスタマーセンターです。ご利用代金については【1】。カードの紛失・盗難は【2】。海外でのご利用については【3】。その他のお問い合わせは【9】を、押してください。',
+        text: 'お電話ありがとうございます。ミライカード カスタマーセンターです。この通話は、サービス品質向上のため、録音させていただきます。ただいま、お電話が大変混み合っております。Webサイトの会員ページでは、ご利用明細の確認や、各種お手続きを、24時間受け付けております。ご用件を番号でお選びください。ご利用代金については【1】。カードの紛失・盗難は【2】。海外でのご利用については【3】。その他のお問い合わせは【9】を、押してください。',
         routes: { '1': 'loop:daikin', '2': 'loop:tounan', '3': 'abroad', '9': 'loop:sonota' },
       },
       abroad: {
-        text: '海外でのご利用ですね。海外旅行保険については【1】を。海外でカードが使えない場合は【2】を、押してください。',
-        routes: { '1': 'loop:hoken', '2': 'card' },
+        text: '海外でのご利用ですね。海外旅行保険については【1】を。海外キャッシングについては【2】を。海外でカードが使えない場合は【3】を、押してください。',
+        routes: { '1': 'loop:hoken', '2': 'loop:cashing', '3': 'card' },
       },
       card: { type: 'input', text: 'カード番号の、下4桁を入力し、最後に【＃】を押してください。', answer: '3344', next: 'birth' },
       birth: { type: 'input', text: 'ご登録の生年月日を、月と日の4桁で入力し、最後に【＃】を押してください。', answer: '0612', next: 'wait' },
       wait: {
         text: '担当者にお繋ぎします。なお、Webなら、ご利用制限の解除を今すぐ行えます。Webをご希望の場合は【1】を。担当者をご希望の場合は【0】を、押してください。',
         routes: { '1': 'web', '0': 'hold>sasaki' },
+        holdMs: 35000,
       },
       sasaki: {
         type: 'human', who: { name: '佐々木', icon: '🧑‍💼' },
         lines: [
           'お電話ありがとうございます。総合窓口の佐々木です。',
-          '海外でカードがご利用いただけない件ですね。……大変申し訳ございません。そちらは、海外デスクの担当となります。',
+          'はい、はい……。海外で、カードがご利用いただけない件ですね。ご本人確認のため、お名前と……あ、プッシュでご入力いただいているんですね。ありがとうございます。',
+          '……大変申し訳ございません。海外でのご利用制限につきましては、海外デスクの担当となります。',
           '海外デスクへお回しいたしますので、そのままお待ちください。',
         ],
         next: 'hold>desk_top',
+        holdMs: 30000,
       },
       desk_top: {
         company: 'ミライカード 海外デスク',
-        text: 'ミライカード 海外デスクです。この通話は録音させていただきます。お手数ですが、改めてご用件をお選びください。海外旅行保険については【1】。海外でのご利用制限については【2】。外貨両替については【3】を、押してください。',
+        text: 'Thank you for calling Mirai Card Global Desk. 日本語でのご案内は、このままお待ちください。……ミライカード 海外デスクです。この通話は録音させていただきます。お手数ですが、改めてご用件をお選びください。海外旅行保険については【1】。海外でのご利用制限については【2】。外貨両替については【3】を、押してください。',
         routes: { '1': 'loop:hoken', '2': 'desk_card', '3': 'loop:ryougae' },
       },
       desk_card: { type: 'input', text: '改めて、ご本人確認を行います。カード番号の、下4桁を入力し、最後に【＃】を押してください。', answer: '3344', next: 'desk_country' },
       desk_country: {
         text: 'ご滞在中の地域をお選びください。アジアは【1】。ヨーロッパは【2】。北米は【3】。その他の地域は【4】を、押してください。',
-        routes: { '1': 'loop:tantougai', '2': 'loop:tantougai', '3': 'hold', '4': 'loop:tantougai' },
+        routes: { '1': 'loop:tantougai', '2': 'loop:tantougai', '3': 'desk_return', '4': 'loop:tantougai' },
+      },
+      desk_return: { type: 'input', text: '北米デスクでお伺いします。ご帰国の予定日を、月と日の4桁で入力し、最後に【＃】を押してください。', answer: '1109', next: 'desk_use' },
+      desk_use: {
+        text: 'ご滞在中の、直近のご利用を確認いたします。11月1日、ニューヨークのホテルで、480ドルのご利用。こちらは、お客様ご本人のご利用ですか。ご本人のご利用の場合は【1】を。お心当たりがない場合は【2】を、押してください。',
+        routes: { '1': 'hold>nakajima', '2': 'loop:fusei' },
+        holdMs: 45000,
+      },
+      nakajima: {
+        type: 'human', who: { name: '中島', icon: '👨‍💼' },
+        lines: [
+          'お待たせいたしました。海外デスクの中島です。',
+          '北米でのご利用制限の件ですね。……確認いたしました。こちらのカードは、不正利用の検知システムによって、ロックがかかっております。',
+          'このロックの解除は、セキュリティ部門でしか行えないんです。……はい、私どもでは、どうにも。申し訳ございません。',
+          'セキュリティ部門へお回しいたします。なお、セキュリティ部門でも、改めてご本人確認がございます。',
+        ],
+        next: 'hold>sec_top',
+        holdMs: 35000,
+      },
+      sec_top: { type: 'input', company: 'ミライカード セキュリティ部門', text: 'ミライカード セキュリティ部門です。不正利用防止のため、改めて、ご本人確認を行います。カード番号の、下4桁を入力し、最後に【＃】を押してください。', answer: '3344', next: 'sec_birth' },
+      sec_birth: { type: 'input', text: 'ご登録の生年月日を、西暦から8桁で入力し、最後に【＃】を押してください。例えば、1980年1月5日の場合は、19800105です。', answer: '19900612', next: 'hold>sec_how', holdIntro: 'ご本人確認を行っております。', holdLine: '少々お待ちください。', holdMs: 20000 },
+      sec_how: {
+        text: 'ロック解除のための、認証方法をお選びください。SMSに届く認証コードで、今すぐ解除する場合は【1】を。担当者による、口頭でのご本人確認をご希望の場合は【2】を、押してください。',
+        routes: { '1': 'web', '2': 'hold' },
+        holdMs: 60000,
       },
     },
     loops: {
@@ -1022,8 +1299,10 @@ const STAGES = [
       tounan: ['カードの紛失・盗難ですね。カードの利用停止は、Webサイトから24時間承っております。'],
       sonota: ['その他のお問い合わせは、Webのお問い合わせフォームから承っております。'],
       hoken: ['海外旅行保険のご案内です。補償内容は、カードの種類によって異なります。詳しくは、会員ページをご覧ください。'],
+      cashing: ['海外キャッシングのご案内です。ご利用可能枠は、Webの会員ページでご確認いただけます。'],
       ryougae: ['外貨両替のご案内です。両替レートは、毎日午前10時に更新されます。'],
       tantougai: ['ご滞在の地域は、こちらの窓口の担当外です。お手数ですが、地域担当デスクへおかけ直しください。'],
+      fusei: ['お心当たりのないご利用ですね。カードの再発行のお手続きを行います。新しいカードは、ご登録のご住所へ、約2週間でお届けします。……ご登録のご住所は、日本国内です。'],
     },
     randomLoops: ['daikin', 'sonota'],
     loopAch: {},
@@ -1033,21 +1312,36 @@ const STAGES = [
     title: '色違いが届いた',
     desc: '注文と違う商品を交換させろ',
     company: 'ミライ通販 お客様センター',
-    lead: '注文と違う色の服が届いた！',
+    lead: 'ネイビーを頼んだのに、ワインレッドが届いた！',
     goal: ['<em>人間に</em>正しい商品と', '交換してもらえ！'],
     bar: '正しい商品と<b>人間に</b>交換してもらえ',
-    memo: [['注文番号', '202611'], ['電話番号の下4桁', '7788'], ['状況', '色違いが届いた'], ['希望', '交換']],
+    memo: {
+      title: '注文メモ',
+      items: [
+        ['今回の注文番号', '202611'],
+        ['前回の注文番号', '202503'],
+        ['商品番号（タグに記載）', 'KT-4410'],
+        ['注文した色', 'ネイビー'],
+        ['届いた色', 'ワインレッド'],
+        ['サイズ', 'M'],
+        ['タグ', 'ついたまま'],
+        ['登録した電話番号', '080-3421-7788'],
+        ['会員ID', '55102'],
+        ['届いた日', '10月30日'],
+        ['返送方法', '家まで取りに来てほしい'],
+      ],
+    },
     trap: 'マイページ',
     webLine: 'ご入力ありがとうございます。マイページのURLをSMSでお送りしました。マイページからお申し込みください。',
     operator: '森', operatorIcon: '🧑‍💼',
-    humanLine: 'お待たせいたしました。返品交換センターの森です。正しい色の商品、すぐにお送りしますね。',
+    humanLine: 'お待たせいたしました。返品交換センターの森です。ネイビーのMサイズ、すぐにお送りしますね。届いた商品は、明日、ご自宅まで集荷に伺います。',
     clearMsg: '森さんが、正しい色の服を手配してくれた。<br>3人目にして、ようやく。',
-    hold: { ms: 8000, webOffer: true },
+    hold: { ms: 30000, webOffer: true },
     start: 'top',
-    path: [['top', '3'], ['henpin', '2'], ['order', '202611#'], ['tel', '7788#'], ['kind', '2'], ['wait', '0'], ['b_top', '202611#'], ['b_kind', '2'], ['k_top', '7788#'], ['k_menu', '1']],
+    path: [['top', '3'], ['henpin', '2'], ['order', '202611#'], ['tel', '7788#'], ['kind', '2'], ['arrived', '1030#'], ['tag', '1'], ['wait', '0'], ['b_top', '202611#'], ['b_kind', '2'], ['b_item', '4410#'], ['k_top', '7788#'], ['k_order', '202611#'], ['k_menu', '1'], ['k_color', '2'], ['k_size', '2'], ['k_return', '1']],
     nodes: {
       top: {
-        text: 'お電話ありがとうございます。ミライ通販 お客様センターです。ご注文については【1】。配送状況については【2】。返品・交換については【3】。その他のお問い合わせは【0】を、押してください。',
+        text: 'お電話ありがとうございます。ミライ通販 お客様センターです。ただいま、セール期間中のため、お電話が大変混み合っております。ご注文の確認や、返品・交換のお申し込みは、マイページから24時間承っております。ご用件をお選びください。ご注文については【1】。配送状況については【2】。返品・交換については【3】。その他のお問い合わせは【0】を、押してください。',
         routes: { '1': 'loop:chumon', '2': 'loop:haisou', '3': 'henpin', '0': 'loop:sonota' },
       },
       henpin: {
@@ -1058,39 +1352,66 @@ const STAGES = [
       tel: { type: 'input', text: 'ご登録の電話番号の、下4桁を入力し、最後に【＃】を押してください。', answer: '7788', next: 'kind' },
       kind: {
         text: 'どのような間違いですか。商品そのものが違う場合は【1】。色やサイズが違う場合は【2】。数量が違う場合は【3】を、押してください。',
-        routes: { '1': 'loop:sonota', '2': 'wait', '3': 'loop:sonota' },
+        routes: { '1': 'loop:sonota', '2': 'arrived', '3': 'loop:sonota' },
+      },
+      arrived: { type: 'input', text: '商品がお届けされた日を、月と日の4桁で入力し、最後に【＃】を押してください。', answer: '1030', next: 'tag' },
+      tag: {
+        text: '商品のタグは、ついたままですか。タグがついたままの場合は【1】を。タグを外してしまった場合は【2】を、押してください。',
+        routes: { '1': 'wait', '2': 'loop:tag' },
       },
       wait: {
         text: '担当者にお繋ぎします。返品・交換は、マイページからもお申し込みいただけます。マイページをご利用の場合は【1】を。担当者をご希望の場合は【0】を、押してください。',
         routes: { '1': 'web', '0': 'hold>kimura' },
+        holdMs: 45000,
       },
       kimura: {
         type: 'human', who: { name: '木村', icon: '👩‍💼' },
         lines: [
           'お電話ありがとうございます。お客様センターの木村です。',
-          '色違いの商品が届いた件ですね。……申し訳ございません、出荷に関することは、物流センターでの対応となります。',
+          '色違いの商品が届いた件ですね。ご迷惑をおかけして、申し訳ございません。ご注文の商品は、ネイビーの、Mサイズ、でよろしいですか。……はい、ありがとうございます。',
+          '……あ、申し訳ございません。出荷の間違いに関することは、物流センターでの確認が必要となります。',
           '物流センターへお回しいたします。',
         ],
         next: 'hold>b_top',
+        holdMs: 30000,
       },
       b_top: { type: 'input', company: 'ミライ通販 物流センター', text: 'ミライ通販 物流センターです。お手数ですが、ご注文番号6桁を入力し、最後に【＃】を押してください。', answer: '202611', next: 'b_kind' },
       b_kind: {
         text: 'ご用件をお選びください。配送日時の変更は【1】を。誤配送・誤出荷については【2】を、押してください。',
-        routes: { '1': 'loop:nichiji', '2': 'hold>hayashi' },
+        routes: { '1': 'loop:nichiji', '2': 'b_item' },
+      },
+      b_item: {
+        type: 'input', text: '出荷の記録を確認します。届いた商品の、商品番号の、数字部分を入力し、最後に【＃】を押してください。商品番号は、商品のタグに記載されています。', answer: '4410', next: 'hold>hayashi',
+        holdMs: 30000,
       },
       hayashi: {
         type: 'human', who: { name: '林', icon: '👨‍🔧' },
         lines: [
-          '物流センターの林です。誤出荷の件ですね。',
-          '……あ、交換をご希望ですか？交換のお手続きは、返品交換センターの担当なんです。',
+          '物流センターの林です。誤出荷の件ですね。出荷の記録を確認しました。……確かに、ワインレッドが出荷されています。大変申し訳ございません。',
+          '……それで、交換をご希望ですか？あー……交換のお手続きは、返品交換センターの担当なんです。こちらでは、出荷の記録を確認することしか、できなくて。',
           '大変申し訳ございません。返品交換センターへお回しいたします。',
         ],
         next: 'hold>k_top',
+        holdMs: 35000,
       },
-      k_top: { type: 'input', company: 'ミライ通販 返品交換センター', text: 'ミライ通販 返品交換センターです。ご本人確認のため、ご登録の電話番号の、下4桁を入力し、最後に【＃】を押してください。', answer: '7788', next: 'k_menu' },
+      k_top: { type: 'input', company: 'ミライ通販 返品交換センター', text: 'ミライ通販 返品交換センターです。ご本人確認のため、ご登録の電話番号の、下4桁を入力し、最後に【＃】を押してください。', answer: '7788', next: 'k_order' },
+      k_order: { type: 'input', text: '続いて、ご注文番号6桁を入力し、最後に【＃】を押してください。', answer: '202611', next: 'hold>k_menu', holdIntro: 'ご注文の履歴を、照会しております。', holdLine: '少々お待ちください。', holdMs: 20000 },
       k_menu: {
         text: '交換をご希望の場合は【1】を。返金をご希望の場合は【2】を、押してください。',
-        routes: { '1': 'hold', '2': 'loop:henkin' },
+        routes: { '1': 'k_color', '2': 'loop:henkin' },
+      },
+      k_color: {
+        text: '交換後の、商品の色をお選びください。ブラックは【1】。ネイビーは【2】。ワインレッドは【3】。ベージュは【4】を、押してください。',
+        routes: { '1': 'loop:irochigai', '2': 'k_size', '3': 'loop:irochigai', '4': 'loop:irochigai' },
+      },
+      k_size: {
+        text: 'サイズをお選びください。Sは【1】。Mは【2】。Lは【3】を、押してください。',
+        routes: { '1': 'loop:irochigai', '2': 'k_return', '3': 'loop:irochigai' },
+      },
+      k_return: {
+        text: '届いた商品の、返送方法をお選びください。ご自宅への集荷をご希望の場合は【1】を。コンビニから発送する場合は【2】を、押してください。コンビニ発送の場合は、発送用のコードを、マイページのURLからお受け取りいただきます。',
+        routes: { '1': 'hold', '2': 'web' },
+        holdMs: 60000,
       },
     },
     loops: {
@@ -1098,8 +1419,10 @@ const STAGES = [
       haisou: ['配送状況は、Webサイトのマイページからご確認いただけます。'],
       sonota: ['その他のお問い合わせは、マイページのお問い合わせフォームをご利用ください。'],
       jiko: ['お客様都合の返品は、商品到着後8日以内に、マイページからお申し込みください。返送料は、お客様のご負担となります。'],
+      tag: ['タグを外された商品は、交換をお受けできない場合がございます。詳しくは、マイページの返品ポリシーをご覧ください。'],
       nichiji: ['配送日時の変更は、マイページから承っております。'],
       henkin: ['返金のご案内です。返金は、商品の到着を確認したのち、2週間ほどで行います。'],
+      irochigai: ['ご指定の商品で、交換を承りました。……ご注文と異なる商品への交換は、新規のご注文となります。マイページからお申し込みください。'],
     },
     randomLoops: ['chumon', 'haisou'],
     loopAch: {},
@@ -1109,69 +1432,118 @@ const STAGES = [
     title: '解約させてくれ',
     desc: '海外移住のためスマホを解約しろ',
     company: 'ミライモバイル サポート',
-    lead: '海外移住が決まった。スマホを解約したい',
+    lead: 'カナダへの移住が決まった。スマホを解約したい',
     goal: ['<em>人間に</em>スマホを', '解約させろ！'],
     bar: 'スマホを<b>人間に</b>解約させろ',
-    memo: [['電話番号の下4桁', '9051'], ['生年月日', '1988年8月23日'], ['解約の理由', '海外へ引っ越し']],
+    memo: {
+      title: '解約メモ',
+      items: [
+        ['自分の電話番号', '090-1234-9051'],
+        ['妻の電話番号（家族割）', '090-5678-9015'],
+        ['自分の生年月日', '1988年8月23日'],
+        ['妻の生年月日', '1990年2月14日'],
+        ['契約者番号', 'MR-77120'],
+        ['解約の理由', '海外へ引っ越し'],
+        ['引っ越し先', 'カナダ'],
+        ['出国日', '12月1日'],
+        ['端末の残りの支払い', '3回分（一括で払う）'],
+        ['番号の保管サービス', 'いらない'],
+      ],
+    },
     trap: 'Web',
     webLine: 'ご入力ありがとうございます。WebサイトのURLをSMSでお送りしました。Webをご利用ください。',
     operator: '松本', operatorIcon: '👩‍💼',
     humanLine: 'お待たせいたしました。解約専門窓口の松本です。ご解約、確かに承りました。長い間、ありがとうございました。',
     clearMsg: 'ついに解約できた。<br>電話を切ったら、窓の外が少し明るく見えた。',
-    hold: { ms: 9000, webOffer: false },
+    hold: { ms: 30000, webOffer: false },
     start: 'top',
-    path: [['top', '9'], ['reason', '3'], ['kaigai', '2'], ['tel', '9051#'], ['birth', '19880823#'], ['wait', '0'], ['k_top', '9051#'], ['k_birth', '19880823#'], ['k_reason', '3'], ['k_last', '1']],
+    path: [['top', '9'], ['reason', '4'], ['kaigai', '2'], ['hokan', '2'], ['tel', '9051#'], ['birth', '19880823#'], ['date', '1201#'], ['wait', '0'], ['k_top', '9051#'], ['k_birth', '19880823#'], ['k_reason', '4'], ['k_kaigai', '2'], ['k_device', '1'], ['k_last', '1'], ['k_survey', '3']],
     nodes: {
       top: {
-        text: 'お電話ありがとうございます。ミライモバイル サポートセンターです。料金・プランについては【1】。機種変更については【2】。故障・修理については【3】。ご解約については【9】を、押してください。',
-        routes: { '1': 'loop:plan', '2': 'loop:kishu', '3': 'loop:kosho', '9': 'reason' },
+        text: 'お電話ありがとうございます。ミライモバイル サポートセンターです。この通話は、サービス品質向上のため、録音させていただきます。料金プランの変更や、各種お手続きは、Webサイトの会員ページから、24時間受け付けております。ご用件を番号でお選びください。料金・プランについては【1】。機種変更については【2】。故障・修理については【3】。ご解約については【9】を、押してください。',
+        routes: { '1': 'loop:plan', '2': 'loop:kishu', '3': 'loop:kosho', '9': 'pre' },
+      },
+      pre: {
+        type: 'talk',
+        lines: [
+          'ご解約のお手続きですね。いつもミライモバイルをご利用いただき、ありがとうございます。',
+          'ご解約の前に、お客様に、とってもお得な情報をご案内いたします！ただいま、ご契約5年以上のお客様限定で、「ありがとう感謝祭」を開催中です！',
+          'ミライポイント5,000ポイントのプレゼントに加えて、月額料金が、半年間、半額になります！この機会に、ぜひ、ご継続をご検討ください！',
+          'それでは、ご解約の理由をお伺いします。',
+        ],
+        next: 'reason',
       },
       reason: {
-        text: 'ご解約ですね。……差し支えなければ、解約の理由をお選びください。料金が高いは【1】。他社への乗り換えは【2】。海外へのお引っ越しは【3】。その他は【4】を、押してください。',
-        routes: { '1': 'loop:waribiki', '2': 'loop:mnp', '3': 'kaigai', '4': 'loop:sonota' },
+        text: 'ご解約の理由をお選びください。料金が高いは【1】。他社への乗り換えは【2】。電波がつながりにくいは【3】。海外へのお引っ越しは【4】。その他は【5】を、押してください。',
+        routes: { '1': 'loop:waribiki>reason', '2': 'loop:mnp>reason', '3': 'loop:denpa>reason', '4': 'kaigai', '5': 'loop:sonota>reason' },
       },
       kaigai: {
-        text: '海外へのお引っ越しですね。海外でもそのまま使える、国際ローミングプランもございます！プランの詳細を聞く場合は【1】を。それでも解約する場合は【2】を、押してください。',
-        routes: { '1': 'loop:roaming', '2': 'tel' },
+        text: '海外へのお引っ越しですね！実は、ミライモバイルなら、海外でもそのまま使える、国際ローミングプランがございます！1日980円で、世界200以上の国と地域で、データ通信が使い放題！プランの詳細を聞く場合は【1】を。それでも解約する場合は【2】を、押してください。',
+        routes: { '1': 'loop:roaming>kaigai', '2': 'hokan' },
+      },
+      hokan: {
+        text: '海外にご滞在の間、今の電話番号を、そのまま保管できる、「番号おあずかりサービス」もございます！月額たったの390円で、帰国後も、同じ番号をお使いいただけます！番号おあずかりサービスに申し込む場合は【1】を。申し込まずに解約する場合は【2】を、押してください。',
+        routes: { '1': 'loop:hokan>hokan', '2': 'tel' },
       },
       tel: { type: 'input', text: 'ご契約の電話番号の、下4桁を入力し、最後に【＃】を押してください。', answer: '9051', next: 'birth' },
-      birth: { type: 'input', text: 'ご契約者様の生年月日を、西暦から8桁で入力し、最後に【＃】を押してください。', answer: '19880823', next: 'wait' },
+      birth: { type: 'input', text: 'ご契約者様の生年月日を、西暦から8桁で入力し、最後に【＃】を押してください。', answer: '19880823', next: 'date' },
+      date: { type: 'input', text: 'ご出国の予定日を、月と日の4桁で入力し、最後に【＃】を押してください。', answer: '1201', next: 'hold>wait', holdIntro: 'ご解約に関するご案内を、準備しております。', holdLine: '少々お待ちください。', holdMs: 20000 },
       wait: {
         text: '担当者にお繋ぎします。なお、ご解約はWebからも……失礼いたしました。ご解約は、Webではお手続きいただけません。担当者をお待ちになる場合は【0】を、押してください。',
         routes: { '0': 'hold>ishii' },
+        holdMs: 50000,
       },
       ishii: {
         type: 'human', who: { name: '石井', icon: '🧑‍💼' },
         lines: [
           'お電話ありがとうございます。ミライモバイルの石井です。',
-          'ご解約ですね。……その前に！今なら、月額料金が半年間無料になるキャンペーンが……',
-          '……失礼いたしました。ご解約のお手続きは、解約専門窓口での対応となります。お回しいたします。',
+          'ご解約ですね。カナダへ、ご移住なさるんですね！素敵です！……その前に、ひとつだけ！今なら、月額料金が、半年間無料になるキャンペーンがございまして……',
+          '……え、もう、お聞きになりましたか。失礼いたしました。',
+          'それでは、ご解約のお手続きですが……大変申し訳ございません。ご解約は、解約専門窓口での対応となります。お回しいたしますので、そのままお待ちください。',
         ],
         next: 'hold>k_top',
+        holdMs: 50000,
       },
       k_top: { type: 'input', company: 'ミライモバイル 解約専門窓口', text: 'ミライモバイル 解約専門窓口です。お手数ですが、もう一度、ご契約の電話番号の、下4桁を入力し、最後に【＃】を押してください。', answer: '9051', next: 'k_birth' },
-      k_birth: { type: 'input', text: 'ご契約者様の生年月日を、西暦から8桁で入力し、最後に【＃】を押してください。', answer: '19880823', next: 'k_reason' },
+      k_birth: { type: 'input', text: 'ご契約者様の生年月日を、西暦から8桁で入力し、最後に【＃】を押してください。', answer: '19880823', next: 'hold>k_reason', holdIntro: 'ご契約内容を、確認しております。', holdLine: '少々お待ちください。', holdMs: 20000 },
       k_reason: {
-        text: '改めて、解約の理由をお選びください。料金が高いは【1】。他社への乗り換えは【2】。海外へのお引っ越しは【3】。その他は【4】を、押してください。',
-        routes: { '1': 'loop:waribiki', '2': 'loop:mnp', '3': 'k_last', '4': 'loop:sonota' },
+        text: '改めて、ご解約の理由をお選びください。料金が高いは【1】。他社への乗り換えは【2】。電波がつながりにくいは【3】。海外へのお引っ越しは【4】。その他は【5】を、押してください。',
+        routes: { '1': 'loop:waribiki>k_reason', '2': 'loop:mnp>k_reason', '3': 'loop:denpa>k_reason', '4': 'k_kaigai', '5': 'loop:sonota>k_reason' },
+      },
+      k_kaigai: {
+        text: '海外へのお引っ越しですね。……念のため、もう一度だけ、ご案内させてください。海外でも使える国際ローミングプランなら、1日980円で、データ通信が使い放題です。プランの詳細を聞く場合は【1】を。それでも解約する場合は【2】を、押してください。',
+        routes: { '1': 'loop:roaming>k_kaigai', '2': 'k_device' },
+      },
+      k_device: {
+        text: '端末代金の、残りのお支払いについてお選びください。残りの分を、一括でお支払いいただく場合は【1】を。これまでどおり、分割でのお支払いを続ける場合は【2】を、押してください。',
+        routes: { '1': 'hold>k_last', '2': 'loop:bunkatsu>k_device' },
+        holdIntro: '端末代金の精算額を、計算しております。', holdLine: '少々お待ちください。', holdMs: 15000,
       },
       k_last: {
         text: '最後の確認です。解約すると、これまで貯めたポイントが、すべて失効します。本当に解約する場合は【1】を。考え直す場合は【2】を、押してください。',
-        routes: { '1': 'hold', '2': 'loop:keizoku' },
+        routes: { '1': 'k_survey', '2': 'loop:keizoku' },
+      },
+      k_survey: {
+        text: '最後に、アンケートにご協力ください。ミライモバイルの、これまでのサービスに、どのくらいご満足いただけましたか。とても満足は【5】。満足は【4】。ふつうは【3】。不満は【2】。とても不満は【1】を、押してください。',
+        routes: { '1': 'hold', '2': 'hold', '3': 'hold', '4': 'hold', '5': 'hold' },
+        holdIntro: 'ご回答ありがとうございました。解約手続きの担当者に、お繋ぎします。', holdMs: 60000,
       },
     },
     loops: {
       plan: ['料金プランのご案内です。ただいま、ギガ使い放題プランが大変お得になっております。'],
       kishu: ['機種変更は、オンラインショップなら事務手数料無料！'],
       kosho: ['故障・修理のご相談は、まず端末の再起動をお試しください。'],
-      waribiki: ['料金が高いと感じていらっしゃるのですね！今なら、お客様だけの特別割引で、月額料金が半額に！ぜひ、ご検討ください。', '……ご検討いただけましたでしょうか。'],
-      mnp: ['他社への乗り換えをご検討中ですね。乗り換えの前に、ミライモバイルの新プランを、ぜひ一度お試しください！'],
+      waribiki: ['料金が高いと感じていらっしゃるのですね！今なら、お客様だけの特別割引で、月額料金が、なんと半額に！さらに、ギガ使い放題プランへの変更で、ミライポイントを3,000ポイントプレゼント！ぜひ、ご検討ください。'],
+      mnp: ['他社への乗り換えをご検討中ですね。乗り換えの前に、ぜひ、ミライモバイルの新プラン「ミライ ずっと得プラン」を、一度お試しください！今なら、最初の3か月が無料です！'],
+      denpa: ['電波がつながりにくいのですね。ミライモバイルでは、ご自宅用の電波改善装置を、無料でお貸し出ししております。お申し込みは、Webサイトから承っております。'],
       sonota: ['解約の理由を、詳しくお聞かせください。……音声を認識できませんでした。'],
-      roaming: ['国際ローミングプランのご案内です。1日980円で、世界200以上の国と地域で、データ通信が使い放題！解約する前に、ぜひご検討ください。'],
+      roaming: ['国際ローミングプランのご案内です。1日980円で、世界200以上の国と地域で、データ通信が使い放題！カナダはもちろん、アメリカ、ヨーロッパ、アジアの主要都市でもご利用いただけます！さらに今なら、お申し込みから1か月間は、1日あたり490円！解約する前に、ぜひご検討ください！'],
+      hokan: ['番号おあずかりサービスのご案内です。お申し込みは、ご出国の前日まで、Webサイトから承っております。月額390円で、大切な電話番号を、お預かりいたします！'],
+      bunkatsu: ['分割でのお支払いを続ける場合は、ご解約後も、毎月のご請求書が、ご登録のご住所へ届きます。……ご登録のご住所は、日本国内です。'],
       keizoku: ['ありがとうございます！これからも、ミライモバイルをよろしくお願いいたします！', '引き続き、ミライモバイルをご利用いただき、ありがとうございます！'],
     },
     randomLoops: ['plan', 'kishu', 'kosho'],
-    loopAch: { waribiki: 'hikitome', roaming: 'hikitome', keizoku: 'hikitome' },
+    loopAch: { waribiki: 'hikitome', mnp: 'hikitome', roaming: 'hikitome', hokan: 'hikitome', keizoku: 'hikitome' },
   },
 ];
 
@@ -1196,10 +1568,10 @@ const ACH = [
   { id: 'all_clear', icon: '👑', title: '人間コンプリート', desc: '全ステージをクリア' },
   { id: 'rank_s', icon: '🌟', title: 'Sランク', desc: 'いずれかのステージでSランクを獲得' },
   { id: 'all_s', icon: '💎', title: 'オールS', desc: '全ステージでSランクを獲得' },
-  { id: 'perfect', icon: '🎯', title: '迷いなき指', desc: 'やり直し・怒られ・たらい回しなしでクリア' },
+  { id: 'perfect', icon: '🎯', title: '迷いなき指', desc: 'やり直し・入力ミス・たらい回しなしでクリア' },
   { id: 'speed', icon: '⚡', title: '秒で繋がる', desc: '45秒以内にクリア' },
-  { id: 'flying', icon: '😤', title: 'せっかち', desc: 'ガイダンス中に押して怒られる' },
-  { id: 'flying3', icon: '🙉', title: '学ばない人', desc: '1回のプレイで3回怒られる' },
+  { id: 'flying', icon: '😤', title: 'せっかち', desc: 'ガイダンスを最後まで聞かずに番号を押す' },
+  { id: 'flying3', icon: '🙉', title: '学ばない人', desc: '1回のプレイで3回、番号の入力を間違える' },
   { id: 'wrong_input', icon: '🔢', title: 'うろ覚え', desc: '確認番号の入力を間違える' },
   { id: 'loop', icon: '🔄', title: 'たらい回しデビュー', desc: '関係ない窓口に回される' },
   { id: 'loop3', icon: '🌀', title: 'ループの住人', desc: 'たらい回しの案内を3周聞く' },
@@ -1241,7 +1613,7 @@ const el = {
   app: $('#app'), sub: $('#subtitle'), speaker: $('#speaker'), avatar: $('#avatar'),
   timer: $('#timer'), status: $('#status'), input: $('#inputDisp'), pad: $('#pad'),
   hang: $('#hangBtn'), retry: $('#retryBtn'), toast: $('#toast'), achToast: $('#achToast'), hold: $('#holdPanel'),
-  hint: $('#hint'), mute: $('#muteBtn'), memo: $('#memo'), company: $('#company'),
+  hint: $('#hint'), mute: $('#muteBtn'), memoBtn: $('#memoBtn'), memoOv: $('#memoOv'), company: $('#company'),
   homeOv: $('#homeOv'), achOv: $('#achOv'), overOv: $('#overOv'), clearOv: $('#clearOv'), missionOv: $('#missionOv'),
 };
 
@@ -1263,7 +1635,9 @@ const S = {
   speaking: false,
   node: null,
   loopName: null,
-  buf: '',            // 番号入力中の値
+  loopBack: null,     // 案内を聞かせたあと戻すノード（なければ無限ループ）
+  holdMsg: 0,         // 保留中の小言をどこまで流したか（ステージ内で続きから）
+  buf: '',          // 番号入力中の値
   gen: 0,
   startAt: 0, endAt: 0, running: false,
   redials: 0, scolds: 0, loops: 0,
@@ -1452,24 +1826,49 @@ function achCountText() { return `${ACH.filter((a) => SAVE.ach[a.id]).length} / 
 const HOLD_LINE = 'ただいま電話が大変混み合っております。オペレーターにお繋ぎするまで、このままお待ちください。';
 const HOLD_INTRO_AI = 'オペレーターにお繋ぎします。';
 const HOLD_INTRO_TRANSFER = '担当部署へ、転送しております。';
-const holdIntroFor = (node) => node && node.type === 'human' ? HOLD_INTRO_TRANSFER : HOLD_INTRO_AI;
+/* 保留中に流れる小言。長い保留ほどたくさん流れる */
+const HOLD_FIRST = '♪〜 ♪〜（保留音）　順番にお繋ぎしております。そのまま、お待ちください。';
+const HOLD_LAST = '♪〜 ♪〜（保留音）　大変お待たせしております。もうしばらくお待ちください…';
+const HOLD_EXTRA = [
+  '♪〜（保留音）　ただいまの待ち時間は、約20分です。',
+  '♪〜（保留音）　お客様は、ただいま、12番目にお待ちいただいております。',
+  '♪〜（保留音）　お繋ぎします……。……失礼いたしました。担当者がすべて通話中です。引き続き、お待ちください。',
+  '♪〜（保留音）　お客様は、ただいま、15番目にお待ちいただいております。',
+  '♪〜（保留音）　この通話は、サービス品質向上のため、録音させていただいております。',
+  '♪〜（保留音）　よくあるご質問は、ホームページに掲載しております。',
+  '♪〜（保留音）　ただいまの待ち時間は、約40分です。',
+];
+/* 保留の長さ・前置きは遷移元ノードの holdMs / holdIntro / holdLine で上書きできる */
+function holdSpec(st, from) {
+  const f = from || {};
+  return {
+    intro: f.holdIntro || (f.who ? HOLD_INTRO_TRANSFER : HOLD_INTRO_AI),
+    line: f.holdLine != null ? f.holdLine : HOLD_LINE,
+    ms: f.holdMs || st.hold.ms,
+  };
+}
 const parseHold = (target) => /^hold(?:>(\w+))?$/.exec(target || '');
+const parseLoop = (target) => /^loop:(\w+)(?:>(\w+))?$/.exec(target || '');
 
 /* 正解ルートを最速で進んだときの所要時間（演出の待ち時間を合計） */
 function minClearMs(st) {
   let ms = 2600;
   const follow = (target, from) => {
     const h = parseHold(target);
-    if (!h) return;
-    ms += textMs(holdIntroFor(from)) + 500 + textMs(HOLD_LINE) + st.hold.ms + 700;
-    if (!h[1]) return;
-    const n = st.nodes[h[1]];
-    if (n.type === 'human') {
-      ms += 500;
-      for (const line of n.lines) ms += textMs(line) + 600;
-      follow(n.next, n);
+    let id = target;
+    if (h) {
+      const hs = holdSpec(st, from);
+      ms += textMs(hs.intro) + 500 + (hs.line ? textMs(hs.line) : 0) + hs.ms + 700;
+      if (!h[1]) return;
+      id = h[1];
     }
+    const n = st.nodes[id];
+    if (!n || !n.lines) return;   // メニュー・番号入力は path 側で数える
+    ms += 500;
+    for (const line of n.lines) ms += textMs(line) + 600;
+    follow(n.next, n);
   };
+  follow(st.start, null);
   for (const [id, keys] of st.path) {
     const n = st.nodes[id];
     ms += 500 + textMs(n.text);
@@ -1534,16 +1933,31 @@ function applyStage() {
   $('#mStage').textContent = `STAGE ${ST.id} ／ ${TIERS[t].name}`;
   $('#mLead').textContent = ST.lead;
   $('#mGoal').innerHTML = ST.goal.map((l) => `<span>${l}</span>`).join('');
-  const memo = ST.memo || [];
-  $('#mMemo').innerHTML = memo.map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join('');
-  el.memo.innerHTML = memo.map(([k, v]) => `<span>${k}<b>${v}</b></span>`).join('');
-  el.memo.hidden = memo.length === 0;
+  const memo = ST.memo;
+  const needsNumbers = Object.values(ST.nodes).some((n) => n.type === 'input');
+  $('#mHint').innerHTML = !memo ? '' : needsNumbers
+    ? '📝 必要な番号は、通話中に「<b>メモを見る</b>」で探せ。<br><b>関係ない数字</b>も書いてあるぞ。'
+    : '📝 状況は、通話中に「<b>メモを見る</b>」で確認できる。';
+  el.memoBtn.hidden = !memo;
+  if (memo) {
+    $('#memoTitle').textContent = memo.title;
+    $('#memoList').innerHTML = memo.items.map(([k, v]) => `<li><span>${k}</span><b>${v}</b></li>`).join('');
+  }
 }
+
+function openMemo() {
+  if (!ST.memo) return;
+  track('memo_open', { stage: ST.id });
+  el.memoOv.hidden = false;
+  el.memoOv.scrollTop = 0;
+}
+function closeMemo() { el.memoOv.hidden = true; }
 
 function resetCallUI() {
   stopHoldMusic();
   setCallBtns(false);
   el.hold.hidden = true; el.hint.hidden = true;
+  closeMemo();
   setSpeaker('ai');
   el.avatar.classList.remove('talking');
   el.sub.textContent = '';
@@ -1565,7 +1979,7 @@ function showHome() {
 /* ================= シーン ================= */
 function resetRun(isRetry) {
   S.redials = isRetry ? S.redials + 1 : 0;
-  S.scolds = 0; S.loops = 0;
+  S.scolds = 0; S.loops = 0; S.holdMsg = 0;
   S.startAt = performance.now(); S.running = true;
   el.timer.textContent = '00:00';
 }
@@ -1593,8 +2007,9 @@ async function startCall(redial) {
 function goTarget(target, from) {
   if (target === 'web') { webTrap(false); return; }
   const h = parseHold(target);
-  if (h) { hold(h[1], holdIntroFor(from)); return; }
-  if (target.startsWith('loop:')) { S.loops++; runLoop(target.slice(5)); return; }
+  if (h) { hold(h[1], holdSpec(ST, from)); return; }
+  const l = parseLoop(target);
+  if (l) { S.loops++; runLoop(l[1], null, l[2]); return; }
   goNode(target);
 }
 
@@ -1604,30 +2019,32 @@ async function goNode(id) {
   S.node = id; S.mode = 'menu'; S.speaking = true; S.buf = '';
   el.hint.hidden = true;
   if (n.company) el.company.textContent = n.company;
-  setStatus(n.type === 'human' ? '通話中（担当者）' : '通話中', 'live');
+  const kind = n.who ? 'human' : 'ai';
+  setStatus(n.who ? '通話中（担当者）' : '通話中', 'live');
   if (!await wait(T(500), g)) return;
 
-  if (n.type === 'human') {
-    // 担当者が喋り終えたら自動で次へ（多くは「担当が違います」→転送）
+  if (n.lines) {
+    // 喋り終えたら自動で次へ（担当者の「担当が違います」→転送 など）
     for (const line of n.lines) {
-      if (!await say(line, g, 'human', n.who)) return;
+      if (!await say(line, g, kind, n.who)) return;
       if (!await wait(T(600), g)) return;
     }
-    if (parseHold(n.next)) unlock('transfer');
+    if (n.who && parseHold(n.next)) unlock('transfer');
     S.speaking = false;
     goTarget(n.next, n);
     return;
   }
 
-  if (!await say(n.text, g)) return;
+  if (!await say(n.text, g, kind, n.who)) return;
   // 読み終えたら字幕を残したまま入力待ち（自動で繰り返さない）
   S.speaking = false;
   el.sub.querySelector('.caret')?.remove();
 }
 
-async function runLoop(name, prefix) {
+/* たらい回し。back があれば案内を1回聞かせてからそのノードへ戻す。なければ延々と繰り返す */
+async function runLoop(name, prefix, back) {
   const g = ++S.gen;
-  S.mode = 'loop'; S.loopName = name; S.speaking = true;
+  S.mode = 'loop'; S.loopName = name; S.loopBack = back || null; S.speaking = true;
   unlock('loop');
   if (ST.loopAch[name]) unlock(ST.loopAch[name]);
   if (prefix) {
@@ -1641,6 +2058,12 @@ async function runLoop(name, prefix) {
       if (!await say(line, g)) return;
       if (!await wait(T(1400), g)) return;
     }
+    if (back) {
+      if (!await say('それでは、前のメニューに戻ります。', g)) return;
+      if (!await wait(T(700), g)) return;
+      goNode(back);
+      return;
+    }
     cycles++;
     el.hint.hidden = false;
     if (cycles >= 3) unlock('loop3');
@@ -1649,27 +2072,11 @@ async function runLoop(name, prefix) {
   }
 }
 
-async function flying() {
-  const g = ++S.gen;
-  S.mode = 'busy'; S.speaking = false; S.scolds++;
-  unlock('flying');
-  if (S.scolds >= 3) unlock('flying3');
-  errBeep(); vibrate([60, 40, 60]);
-  el.app.classList.remove('shake'); void el.app.offsetWidth; el.app.classList.add('shake');
-  toast('⚠ フライング！最後まで聞け！');
-  if (!await say('ピッ。……正しい番号を入力してください。', g, 'sys')) return;
-  if (!await wait(T(900), g)) return;
-  if (!await say('最初のメニューに戻ります。', g)) return;
-  if (!await wait(T(900), g)) return;
-  setInput('');
-  el.company.textContent = ST.company;
-  goNode(ST.start);
-}
-
 async function wrongInput() {
   const g = ++S.gen;
   S.mode = 'busy'; S.speaking = false; S.scolds++;
   unlock('wrong_input');
+  if (S.scolds >= 3) unlock('flying3');
   errBeep(); vibrate([60, 40, 60]);
   if (!await say('入力内容に誤りがあります。もう一度、入力してください。', g, 'sys')) return;
   if (!await wait(T(700), g)) return;
@@ -1696,35 +2103,41 @@ async function webTrap(fromHold) {
 }
 
 /* 保留。next があれば保留明けにそのノードへ（転送）、なければ最後の担当者に繋がってクリア */
-async function hold(next, intro) {
+async function hold(next, spec) {
   const g = ++S.gen;
   S.mode = 'busy'; S.speaking = true;
   setInput('');
-  if (!await say(intro, g)) return;
+  if (!await say(spec.intro, g)) return;
   if (!await wait(T(500), g)) return;
-  if (!await say(HOLD_LINE, g)) return;
+  if (spec.line && !await say(spec.line, g)) return;
 
   S.mode = 'hold'; S.speaking = false;
   setStatus('保留中', 'live');
   el.hold.hidden = false;
   startHoldMusic();
 
-  // 残り時間は見せない。待つしかない
-  const cfg = ST.hold;
-  const dur = T(cfg.ms);
+  // 残り時間は見せない。長い保留ほど小言が増える（約8秒に1回）
+  const msgs = [{ text: HOLD_FIRST }];
+  const slots = Math.max(2, Math.round(spec.ms / 8000));
+  for (let i = 1; i < slots - 1; i++) msgs.push({ text: HOLD_EXTRA[S.holdMsg++ % HOLD_EXTRA.length] });
+  if (ST.hold.webOffer) {
+    msgs.splice(Math.ceil(msgs.length / 2), 0, {
+      web: true,
+      text: `【ご案内】${ST.trap}なら待ち時間なし！今すぐ${ST.trap}でのお手続きに切り替える場合は【1】を押してください。`,
+    });
+  }
+  msgs.push({ text: HOLD_LAST });
+
+  const dur = T(spec.ms);
   const t0 = performance.now();
-  let phase = 0;
+  let shown = 0;
   for (;;) {
     if (g !== S.gen) return;
     const t = Math.min(1, (performance.now() - t0) / dur);
-    if (phase === 0 && t > 0.02) { phase = 1; say('♪〜 ♪〜（保留音）　順番にお繋ぎしております。そのまま、お待ちください。', g); }
-    if (cfg.webOffer && phase === 1 && t > 0.42) {
-      phase = 2; S.holdWebOffer = true;
-      say(`【ご案内】${ST.trap}なら待ち時間なし！今すぐ${ST.trap}でのお手続きに切り替える場合は【1】を押してください。`, g);
-    }
-    if (phase === (cfg.webOffer ? 2 : 1) && t > 0.78) {
-      phase = 3; S.holdWebOffer = false;
-      say('♪〜 ♪〜（保留音）　大変お待たせしております。もうしばらくお待ちください…', g);
+    if (shown < msgs.length && t >= 0.02 + 0.96 * shown / msgs.length) {
+      const m = msgs[shown++];
+      S.holdWebOffer = !!m.web;
+      say(m.text, g);
     }
     if (t >= 1) break;
     await sleep(50);
@@ -1789,6 +2202,7 @@ function endGame(cleared, reason) {
   const ms = elapsed();
   const time = fmt(ms);
   homeConfirm.hidden = true;
+  closeMemo();
   track(cleared ? 'stage_clear' : 'game_over', { stage: ST.id, sec: Math.round(ms / 1000) });
   if (!cleared) {
     $('#overReason').innerHTML = reason;
@@ -1818,7 +2232,7 @@ function endGame(cleared, reason) {
   $('#clNext').hidden = stageIdx >= STAGES.length - 1;
   S.shareText =
     `📞『オペレーターに繋げ！』STAGE${ST.id}【${TIERS[tierOf(ST)].name}】\n「${ST.title}」を ${time} で突破し、人間（${ST.operator}さん）に繋がった！\n` +
-    `ランク${rank}／やり直し${S.redials}回／怒られ${S.scolds}回／たらい回し${S.loops}回\n#オペレーターに繋げ`;
+    `ランク${rank}／やり直し${S.redials}回／入力ミス${S.scolds}回／たらい回し${S.loops}回\n#オペレーターに繋げ`;
   el.clearOv.hidden = false;
   el.clearOv.scrollTop = 0;
 
@@ -1861,7 +2275,9 @@ function onKey(k) {
   vibrate(12);
   if (S.mode === 'menu') {
     const n = ST.nodes[S.node];
-    if (S.speaking) { setInput(keyLabel(k)); flying(); return; }
+    if (n.lines) { toast(n.who ? '担当者が話しています…' : 'ガイダンス再生中…'); return; }
+    // ガイダンスの途中でも押せる（聞き逃しは自己責任）
+    if (S.speaking) unlock('flying');
     if (n.type === 'input') { inputKey(n, k); return; }
     setInput(keyLabel(k));
     const target = n.routes[k];
@@ -1873,7 +2289,7 @@ function onKey(k) {
   }
   if (S.mode === 'loop') {
     setInput(keyLabel(k));
-    runLoop(S.loopName, 'このメニューでは、その番号はご利用いただけません。');
+    runLoop(S.loopName, 'このメニューでは、その番号はご利用いただけません。', S.loopBack);
     return;
   }
   if (S.mode === 'hold') {
@@ -1921,7 +2337,7 @@ if (!(window.CSS && CSS.supports && CSS.supports('height', '100dvh'))) {
 }
 
 /* ================= 画面遷移 ================= */
-/* ステージ開始時に目的を大きく表示。約3秒（メモがあれば長め） or タップで発信へ */
+/* ステージ開始時に目的を大きく表示。タップするまで発信しない（じっくり読める） */
 async function begin(idx) {
   audio();
   stageIdx = idx; ST = STAGES[idx];
@@ -1934,9 +2350,13 @@ async function begin(idx) {
   const ov = el.missionOv;
   ov.classList.remove('out'); ov.hidden = false;
   tone([784], 0.12, 0.12); tone([1046], 0.25, 0.12, 'sine', 0.13);
+  const shownAt = performance.now();
   await new Promise((r) => {
-    const done = () => { ov.removeEventListener('pointerdown', done); clearTimeout(t); r(); };
-    const t = setTimeout(done, T(ST.memo ? 5000 : 3200));
+    const done = () => {
+      if (g !== S.gen) { ov.removeEventListener('pointerdown', done); r(); return; }
+      if (performance.now() - shownAt < 500) return;   // ステージ選択の連打で即発信しない
+      ov.removeEventListener('pointerdown', done); r();
+    };
     ov.addEventListener('pointerdown', done);
   });
   if (g !== S.gen) return;
@@ -1953,6 +2373,10 @@ $('#achBtn').addEventListener('click', () => {
   el.homeOv.hidden = true; el.achOv.hidden = false; el.achOv.scrollTop = 0;
 });
 $('#achBack').addEventListener('click', showHome);
+el.memoBtn.addEventListener('click', openMemo);
+$('#memoClose').addEventListener('click', closeMemo);
+el.memoOv.addEventListener('click', (e) => { if (e.target === el.memoOv || e.target.classList.contains('ov-inner')) closeMemo(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !el.memoOv.hidden) closeMemo(); });
 $('#overRetry').addEventListener('click', () => begin(stageIdx));
 $('#overHome').addEventListener('click', showHome);
 $('#clRetry').addEventListener('click', () => begin(stageIdx));
