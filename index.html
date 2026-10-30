@@ -2528,8 +2528,10 @@ $('#homeYes').addEventListener('click', () => {
   track('home_return', { stage: ST.id });
   if (inCall()) hangUp(); else showHome();
 });
+const GAME_URL = 'https://red-freegames.github.io/operator-ni-tsunage/';
 $('#xBtn').addEventListener('click', () => {
-  const url = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(S.shareText);
+  const url = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(S.shareText) +
+    '&url=' + encodeURIComponent(GAME_URL);
   window.open(url, '_blank', 'noopener');
 });
 
